@@ -15,10 +15,10 @@
         <div class="subtitle">Search resources, see what’s open now, and get directions.</div>
         <nav class="breadcrumb"><a href="index.html">Home</a></nav>
       </div>
-      <!-- NEW: session UI -->
       <div id="userbox" class="badge"></div>
       <a id="loginLink" class="btn" href="login.html" style="width:auto">Log in</a>
       <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
+      <a id="adminLink" class="btn" href="admin.html" style="width:auto; display:none">Admin</a>
     </header>
 
     <section aria-label="Search tools">
@@ -53,16 +53,18 @@
     </footer>
   </div>
 
-  <!-- NEW: localStorage + auth helpers -->
+  <!-- Load libs FIRST, then page scripts -->
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
+
+  <!-- Header session controller -->
   <script>
-    // Header session controller (guest vs signed-in vs admin)
     (async function initHeader(){
       const sess = AUTH.current();
       const userbox   = document.getElementById('userbox');
       const loginLink = document.getElementById('loginLink');
       const logoutBtn = document.getElementById('logoutBtn');
+      const adminLink = document.getElementById('adminLink');
 
       if (sess) {
         userbox.textContent = (sess.admin ? 'Admin • ' : '') + (sess.email || '');
@@ -72,14 +74,18 @@
           AUTH.logout();
           window.location.href = 'index.html';
         });
+        if (sess.admin && adminLink) adminLink.style.display = 'inline-block';
+        else if (adminLink) adminLink.style.display = 'none';
       } else {
         userbox.textContent = 'Guest';
         loginLink.style.display = 'inline-block';
         logoutBtn.style.display  = 'none';
+        if (adminLink) adminLink.style.display = 'none';
       }
     })();
   </script>
 
+  <!-- Search logic -->
   <script>
     const DATA_URL = 'data/resources.json';
     const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -140,7 +146,7 @@
     clearBtn.addEventListener('click',()=>{q.value='';q.focus();doSearch();});
     window.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}if(e.key==='Escape'){q.value='';doSearch();q.blur();}});
     chips.forEach(btn=>btn.addEventListener('click',()=>{const val=btn.dataset.chip;const pressed=btn.getAttribute('aria-pressed')==='true';chips.forEach(c=>c.setAttribute('aria-pressed','false'));if(!pressed){btn.setAttribute('aria-pressed','true');activeChip=val;}else{activeChip=null;}doSearch();}));
-    async function init(){const res=await fetch(DATA_URL);DATA=await res.json();render(DATA,'');}
+    async function init(){const res=await fetch(DATA_URL,{cache:'no-store'});DATA=await res.json();render(DATA,'');}
     init();
   </script>
 </body>

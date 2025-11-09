@@ -3,54 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RamFinder • Resource</title>
+  <title>Resource Details • RamFinder</title>
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
   <div class="container">
     <header>
       <div class="logo" aria-hidden="true">RF</div>
-      <div>
+      <div style="flex:1">
         <h1 id="title">Resource</h1>
-        <div class="subtitle" id="subtitle"></div>
+        <div class="subtitle">Details and directions.</div>
         <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Details</span></nav>
       </div>
-      <!-- NEW: session UI -->
       <div id="userbox" class="badge"></div>
       <a id="loginLink" class="btn" href="login.html" style="width:auto">Log in</a>
       <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
+      <a id="adminLink" class="btn" href="admin.html" style="width:auto; display:none">Admin</a>
     </header>
 
-    <section id="content">
-      <table class="table">
-        <tbody>
-          <tr><th scope="row">Type</th><td id="type"></td></tr>
-          <tr><th scope="row">Building</th><td id="building"></td></tr>
-          <tr><th scope="row">Room</th><td id="room"></td></tr>
-          <tr><th scope="row">Status</th><td id="status"></td></tr>
-          <tr><th scope="row">Notes</th><td id="notes"></td></tr>
-        </tbody>
-      </table>
-
-      <h3>Today's Hours</h3>
-      <div id="todayHours" class="subtitle"></div>
-
-      <h3>Weekly Hours</h3>
-      <table class="table" id="hoursTable">
-        <thead><tr><th>Day</th><th>Open</th><th>Close</th></tr></thead>
-        <tbody></tbody>
-      </table>
-
-      <div class="actions" style="margin-top:14px">
-        <a id="dirBtn" class="btn" target="_blank" rel="noopener">Directions</a>
-        <a class="btn" href="index.html">Back to Search</a>
-      </div>
-    </section>
-
-    <footer><div>Find more resources from the home page.</div></footer>
+    <section class="card" id="details"></section>
   </div>
 
-  <!-- NEW: localStorage + auth helpers -->
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
   <script>
@@ -59,49 +32,64 @@
       const userbox   = document.getElementById('userbox');
       const loginLink = document.getElementById('loginLink');
       const logoutBtn = document.getElementById('logoutBtn');
-
+      const adminLink = document.getElementById('adminLink');
       if (sess) {
         userbox.textContent = (sess.admin ? 'Admin • ' : '') + (sess.email || '');
         loginLink.style.display = 'none';
         logoutBtn.style.display  = 'inline-block';
-        logoutBtn.addEventListener('click', () => {
-          AUTH.logout();
-          window.location.href = 'index.html';
-        });
+        logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
+        if (sess.admin && adminLink) adminLink.style.display = 'inline-block'; else if (adminLink) adminLink.style.display = 'none';
       } else {
         userbox.textContent = 'Guest';
         loginLink.style.display = 'inline-block';
         logoutBtn.style.display  = 'none';
+        if (adminLink) adminLink.style.display = 'none';
       }
     })();
   </script>
-
   <script>
-    const DATA_URL='data/resources.json'; const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    function getParam(name){const u=new URL(window.location.href);return u.searchParams.get(name);}
-    function isOpenNow(item,now=new Date()){const dow=DOW[now.getDay()];const slot=item.hours[dow];if(!slot||slot.closed)return false;const[oh,om]=(slot.open||'00:00').split(':').map(Number);const[ch,cm]=(slot.close||'00:00').split(':').map(Number);const openM=oh*60+om,closeM=ch*60+cm,curM=now.getHours()*60+now.getMinutes();return curM>=openM&&curM<=closeM;}
-    async function init(){
-      const id=getParam('id');
-      const res=await fetch(DATA_URL); const DATA=await res.json();
-      const item=DATA.find(x=>x.id===id);
-      if(!item){document.getElementById('title').textContent='Resource Not Found';document.getElementById('content').innerHTML='<div class="empty">This resource is unavailable.</div>';return;}
-      document.getElementById('title').textContent=item.name;
-      document.getElementById('subtitle').textContent=item.building+(item.room?(' • '+item.room):'');
-      document.getElementById('type').textContent=item.type;
-      document.getElementById('building').textContent=item.building;
-      document.getElementById('room').textContent=item.room||'—';
-      document.getElementById('notes').textContent=item.notes||'—';
-      const open=isOpenNow(item); document.getElementById('status').innerHTML=open?'<span class="open">Open Now</span>':'<span class="closed">Closed</span>';
-      // Today's hours
-      const today=new Date(); const dow=DOW[today.getDay()]; const slot=item.hours[dow];
-      const todayStr=(slot&&!slot.closed)?(dow+': '+slot.open+'–'+slot.close):(dow+': Closed'); document.getElementById('todayHours').textContent=todayStr;
-      // Weekly hours
-      const tbody=document.querySelector('#hoursTable tbody'); tbody.innerHTML='';
-      for(const d of DOW){const s=item.hours[d]; const tr=document.createElement('tr'); tr.innerHTML='<td>'+d+'</td><td>'+(s&&!s.closed?s.open:'—')+'</td><td>'+(s&&!s.closed?s.close:'—')+'</td>'; tbody.appendChild(tr);}
-      // Directions
-      const dir=document.getElementById('dirBtn'); dir.href='https://www.google.com/maps/search/'+encodeURIComponent(item.name+' '+item.building+' Colorado State University'); dir.textContent='Directions';
+    const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function isOpenNow(item, now=new Date()){
+      const slot = item.hours[DOW[now.getDay()]];
+      if(!slot || slot.closed) return false;
+      const [oh, om] = (slot.open||'00:00').split(':').map(Number);
+      const [ch, cm] = (slot.close||'00:00').split(':').map(Number);
+      const openM = oh*60+om, closeM = ch*60+cm, curM = now.getHours()*60+now.getMinutes();
+      return curM>=openM && curM<=closeM;
     }
-    init();
+    function esc(s){return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+    function qs(name){const u=new URL(location.href);return u.searchParams.get(name)}
+    async function load(){
+      const id = qs('id');
+      const res = await fetch('data/resources.json', {cache:'no-store'});
+      const list = await res.json();
+      const item = list.find(r => r.id === id);
+      const box = document.getElementById('details');
+      const title = document.getElementById('title');
+      if(!item){ box.innerHTML = '<div class="empty">Resource not found.</div>'; return; }
+      title.textContent = item.name;
+      const open = isOpenNow(item);
+      const hours = Object.entries(item.hours||{}).map(([d,v])=>{
+        if (v && v.closed) return `<tr><td>${d}</td><td>Closed</td></tr>`;
+        if (!v) return `<tr><td>${d}</td><td>—</td></tr>`;
+        return `<tr><td>${d}</td><td>${esc(v.open)} — ${esc(v.close)}</td></tr>`;
+      }).join('');
+      const gmap = `https://www.google.com/maps/search/${encodeURIComponent((item.name||'')+' '+(item.building||'')+' Colorado State University')}`;
+      box.innerHTML = `
+        <div class="badge">${esc(item.type[0].toUpperCase()+item.type.slice(1))}</div>
+        <h2 style="margin:0">${esc(item.name)}</h2>
+        <div class="row"><span class="dot"></span><span>${esc(item.building)}${item.room?', '+esc(item.room):''}</span></div>
+        <div class="row"><strong class="${open?'open':'closed'}">${open?'Open Now':'Closed'}</strong></div>
+        <div class="row">${esc(item.notes||'')}</div>
+        <div class="actions">
+          <a class="btn" href="${gmap}" target="_blank">Directions</a>
+          <a class="btn" href="index.html">Back to Search</a>
+        </div>
+        <div style="height:12px"></div>
+        <table class="table"><thead><tr><th>Day</th><th>Hours</th></tr></thead><tbody>${hours}</tbody></table>
+      `;
+    }
+    load();
   </script>
 </body>
 </html>

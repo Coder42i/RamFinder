@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Cockpit • RamFinder</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo" aria-hidden="true">RF</div>
+      <div style="flex:1">
+        <h1>Admin Cockpit</h1>
+        <div class="subtitle">Manage admin emails (local override). Export to update data/admins.json later.</div>
+        <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Admin</span></nav>
+      </div>
+      <div id="userbox" class="badge"></div>
+      <a id="loginLink" class="btn" href="login.html" style="width:auto">Log in</a>
+      <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
+    </header>
+
+    <section class="card">
+      <div class="subtitle" style="margin-bottom:10px">
+        <strong>Note:</strong> This cockpit updates a <em>local override</em> list in your browser for demo purposes.
+        Use <strong>Export</strong> to download the merged list and replace <code>data/admins.json</code> if you want to make it official.
+      </div>
+
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px">
+        <input id="adminEmail" type="email" placeholder="new-admin@colostate.edu"
+               style="flex:1; background:#0f182b; border:1px solid #26324d; border-radius:8px; color:#e7edf7; padding:10px" />
+        <button id="addBtn" class="btn">Add Admin</button>
+        <button id="exportBtn" class="btn">Export</button>
+      </div>
+
+      <table class="table">
+        <thead><tr><th>Email</th><th>Source</th><th style="width:140px">Actions</th></tr></thead>
+        <tbody id="adminRows"></tbody>
+      </table>
+    </section>
+
+    <footer><div class="subtitle">Only admins can access this page. Non-admins are redirected.</div></footer>
+  </div>
+
+<script src="assets/store.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+  // Small helper: detect if the Flask API is running (so we can edit data/admins.json)
+  async function isApiLive() {
+    try {
+      const r = await fetch('http://127.0.0.1:5050/api/health', { cache: 'no-store' });
+      if (!r.ok) return false;
+      const j = await r.json();
+      return !!j.ok;
+    } catch { return false; }
+  }
+
+  (async function gate(){
+    const sess = AUTH.current();
+    if (!sess || !(await AUTH.isAdmin(sess.email))) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    // Header UI
+    const userbox   = document.getElementById('userbox');
+    const loginLink = document.getElementById('loginLink');
+    const logoutBtn = document.getElementById('logoutBtn');
+    userbox.textContent = 'Admin • ' + (sess.email || '');
+    loginLink.style.display = 'none';
+    logoutBtn.style.display  = 'inline-block';
+    logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
+
+    // Cockpit UI elements
+    const emailInput = document.getElementById('adminEmail');
+    const addBtn     = document.getElementById('addBtn');
+    const exportBtn  = document.getElementById('exportBtn');
+    const rows       = document.getElementById('adminRows');
+
+    // Cache API state once (re-check on demand if you prefer)
+    const apiUp = await isApiLive();
+
+    // Render table with source labels ("Base" from file, "Override" from local)
+    async function render() {
+      rows.innerHTML = '';
+
+      // Base list from file
+      let baseList = [];
+      try {
+        const r = await fetch('data/admins.json', { cache: 'no-store' });
+        baseList = await r.json();
+      } catch { baseList = []; }
+      const baseSet = new Set((Array.isArray(baseList) ? baseList : []).map(e => (e||'').toLowerCase()));
+
+      // Merged list (base + override, or base + API list)
+      const merged = await AUTH.getAdminsMerged();
+      for (const email of merged) {
+        const lower = (email||'').toLowerCase();
+        const isBase = baseSet.has(lower);
+        const source = isBase ? 'Base (file)' : 'Override (local)';
+        const canRemove = !isBase || apiUp; // allow removing base only if API is live
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${email}</td>
+          <td>${source}</td>
+          <td>
+            <button class="btn" data-email="${email}" data-base="${isBase ? '1' : '0'}" ${canRemove ? '' : 'disabled title="Start the API (app.py) to remove base admins"'}>
+              Remove
+            </button>
+          </td>`;
+        rows.appendChild(tr);
+      }
+    }
+
+    // Add admin
+    addBtn.addEventListener('click', async () => {
+      const email = (emailInput.value || '').trim();
+      if (!email) return;
+      try {
+        await AUTH.addAdmin(email);   // writes to API if up, otherwise to local override
+        emailInput.value = '';
+        await render();
+      } catch (e) {
+        alert(e?.message || 'Could not add admin.');
+      }
+    });
+
+    // Export merged list (optional but handy)
+    exportBtn.addEventListener('click', AUTH.exportMergedAdmins);
+
+    // Remove admin (works for overrides always; for base only if API is running)
+    rows.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-email]');
+      if (!btn) return;
+
+      const email = btn.getAttribute('data-email');
+      const isBase = btn.getAttribute('data-base') === '1';
+
+      if (isBase && !(await isApiLive())) {
+        alert('To remove a base admin, start the backend:\n\n  python app.py\n\nThen refresh this page and try again.');
+        return;
+      }
+
+      if (!confirm(`Remove admin: ${email}?`)) return;
+
+      try {
+        await AUTH.removeAdmin(email);  // API path updates data/admins.json; fallback updates local override
+        await render();
+      } catch (err) {
+        alert('Remove failed. ' + (err?.message || ''));
+      }
+    });
+
+    // Initial render
+    await render();
+  })();
+</script>
+</body>
+</html>
