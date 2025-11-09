@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RamFinder • Search</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo" aria-hidden="true">RF</div>
+      <div>
+        <h1>RamFinder – Campus Resources</h1>
+        <div class="subtitle">Search resources, see what’s open now, and get directions.</div>
+        <nav class="breadcrumb"><a href="index.html">Home</a></nav>
+      </div>
+    </header>
+
+    <section aria-label="Search tools">
+      <div class="searchbar" role="search">
+        <input id="q" type="search" placeholder="Search by name, type, or building (e.g., printer, vending, Morgan)" aria-label="Search resources" autofocus />
+        <button id="clearBtn" aria-label="Clear search">Clear</button>
+      </div>
+
+      <div class="controls">
+        <label class="toggle"><input id="openNow" type="checkbox" /> Open Now</label>
+        <div class="chips" aria-label="Quick filters">
+          <button class="chip" data-chip="printer" aria-pressed="false">Printer</button>
+          <button class="chip" data-chip="vending" aria-pressed="false">Vending</button>
+          <button class="chip" data-chip="study" aria-pressed="false">Study Room</button>
+          <button class="chip" data-chip="lab" aria-pressed="false">Lab</button>
+          <button class="chip" data-chip="restroom" aria-pressed="false">Restroom</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="meta" aria-live="polite" aria-atomic="true">
+      <span id="count">0 results</span>
+      <span>•</span>
+      <span>Type <code class="kbd">/</code> to focus, <code class="kbd">Esc</code> to clear</span>
+    </div>
+
+    <section class="results" id="results" aria-label="Search results"></section>
+    <div id="empty" class="empty" hidden>No resources match your search.</div>
+
+    <footer>
+      <div>Tip: Click a result to see details or open directions.</div>
+    </footer>
+  </div>
+
+  <script>
+    const DATA_URL = 'data/resources.json';
+    const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    function escapeHtml(str){return (str+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function escapeRegExp(str){return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');}
+    function highlight(text, query){
+      const t = text ?? ''; const qn = norm(query).trim();
+      if(!qn) return escapeHtml(t);
+      const re = new RegExp('(' + escapeRegExp(qn) + ')', 'ig');
+      return escapeHtml(t).replace(re, '<mark>$1</mark>');
+    }
+    function isOpenNow(item, now=new Date()){
+      const dow = DOW[now.getDay()]; const slot = item.hours[dow];
+      if(!slot || slot.closed) return false;
+      const [oh, om] = (slot.open||'00:00').split(':').map(Number);
+      const [ch, cm] = (slot.close||'00:00').split(':').map(Number);
+      const openM = oh*60+om, closeM = ch*60+cm, curM = now.getHours()*60+now.getMinutes();
+      return curM>=openM && curM<=closeM;
+    }
+
+    let DATA=[]; let activeChip=null;
+    const q=document.getElementById('q'), results=document.getElementById('results'), count=document.getElementById('count'),
+          empty=document.getElementById('empty'), clearBtn=document.getElementById('clearBtn'), openNow=document.getElementById('openNow'),
+          chips=Array.from(document.querySelectorAll('.chip'));
+
+    function filterData(query){
+      const nq=norm(query);
+      return DATA.filter(item=>{
+        const hay=[item.name,item.type,item.building,item.room,item.notes].map(norm).join(' ');
+        const chipOk=activeChip?norm(item.type)===activeChip:true;
+        const openOk=openNow.checked?isOpenNow(item):true;
+        return chipOk&&openOk&&(nq===''||hay.includes(nq));
+      });
+    }
+    function render(list,query){
+      results.innerHTML='';
+      if(!list.length){count.textContent='0 results';results.hidden=true;empty.hidden=false;return;}
+      results.hidden=false;empty.hidden=true;count.textContent=`${list.length} result${list.length>1?'s':''}`;
+      const frag=document.createDocumentFragment();
+      for(const r of list){
+        const open=isOpenNow(r); const el=document.createElement('article'); el.className='card';
+        el.innerHTML=`
+          <div class="badge">${escapeHtml(r.type[0].toUpperCase()+r.type.slice(1))}</div>
+          <div class="name"><a href="resource.html?id=${encodeURIComponent(r.id)}" style="color:inherit;text-decoration:none">${highlight(r.name,query)}</a></div>
+          <div class="row"><span class="dot"></span><span>${highlight(r.building+(r.room?', '+r.room:''),query)}</span></div>
+          <div class="row"><strong class="${open?'open':'closed'}">${open?'Open Now':'Closed'}</strong></div>
+          <div class="actions"><a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
+          <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a></div>`;
+        frag.appendChild(el);
+      }
+      results.appendChild(frag);
+    }
+    function debounce(fn,ms=120){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+    const doSearch=debounce(()=>{render(filterData(q.value.trim()),q.value.trim());});
+    q.addEventListener('input',doSearch);
+    clearBtn.addEventListener('click',()=>{q.value='';q.focus();doSearch();});
+    window.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}if(e.key==='Escape'){q.value='';doSearch();q.blur();}});
+    chips.forEach(btn=>btn.addEventListener('click',()=>{const val=btn.dataset.chip;const pressed=btn.getAttribute('aria-pressed')==='true';chips.forEach(c=>c.setAttribute('aria-pressed','false'));if(!pressed){btn.setAttribute('aria-pressed','true');activeChip=val;}else{activeChip=null;}doSearch();}));
+    async function init(){const res=await fetch(DATA_URL);DATA=await res.json();render(DATA,'');}
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,4690 @@
+[
+  {
+    "id": "1",
+    "type": "vending",
+    "name": "Vending \u2013 Natural Resources NR101",
+    "building": "Natural Resources",
+    "room": "NR101",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "2",
+    "type": "restroom",
+    "name": "Restroom \u2013 Statistics ST210",
+    "building": "Statistics",
+    "room": "ST210",
+    "notes": "Accessible restroom nearby.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "3",
+    "type": "study",
+    "name": "Study Room \u2013 CS Building 310",
+    "building": "CS Building",
+    "room": "310",
+    "notes": "Quiet study space; check-in required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "18:00"
+      }
+    }
+  },
+  {
+    "id": "4",
+    "type": "water",
+    "name": "Water Fountain \u2013 Natural Resources NR101",
+    "building": "Natural Resources",
+    "room": "NR101",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "5",
+    "type": "cafeteria",
+    "name": "Cafe \u2013 Anatomy/Zoology",
+    "building": "Anatomy/Zoology",
+    "room": "A101",
+    "notes": "Hot meals, coffee, and grab\u2011n\u2011go.",
+    "hours": {
+      "Mon": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Tue": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Wed": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Thu": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Fri": {
+        "open": "07:30",
+        "close": "19:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "16:00"
+      }
+    }
+  },
+  {
+    "id": "6",
+    "type": "lab",
+    "name": "Computer Lab \u2013 CS Building Dev Lab",
+    "building": "CS Building",
+    "room": "Dev Lab",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "7",
+    "type": "printer",
+    "name": "Printer \u2013 Anatomy/Zoology A220",
+    "building": "Anatomy/Zoology",
+    "room": "A220",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "8",
+    "type": "water",
+    "name": "Water Fountain \u2013 Statistics Common Room",
+    "building": "Statistics",
+    "room": "Common Room",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "9",
+    "type": "library",
+    "name": "Library \u2013 CS Building",
+    "building": "CS Building",
+    "room": "Dev Lab",
+    "notes": "Circulation, study areas, and research help.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "10",
+    "type": "study",
+    "name": "Study Room \u2013 Morgan Library 2nd Floor",
+    "building": "Morgan Library",
+    "room": "2nd Floor",
+    "notes": "Quiet study space; check-in required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "18:00"
+      }
+    }
+  },
+  {
+    "id": "11",
+    "type": "parking",
+    "name": "Parking \u2013 Biology Lot",
+    "building": "Biology",
+    "room": "Atrium",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "12",
+    "type": "vending",
+    "name": "Vending \u2013 Lory Student Center Bookstore Level",
+    "building": "Lory Student Center",
+    "room": "Bookstore Level",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "13",
+    "type": "vending",
+    "name": "Vending \u2013 Biology Atrium",
+    "building": "Biology",
+    "room": "Atrium",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "14",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Lory Student Center",
+    "building": "Lory Student Center",
+    "room": "",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "15",
+    "type": "library",
+    "name": "Library \u2013 Statistics",
+    "building": "Statistics",
+    "room": "",
+    "notes": "Circulation, study areas, and research help.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "16",
+    "type": "vending",
+    "name": "Vending \u2013 Biology Lab Hall",
+    "building": "Biology",
+    "room": "Lab Hall",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "17",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Rockwell",
+    "building": "Rockwell",
+    "room": "",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "18",
+    "type": "vending",
+    "name": "Vending \u2013 Statistics ST101",
+    "building": "Statistics",
+    "room": "ST101",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "19",
+    "type": "lab",
+    "name": "Computer Lab \u2013 Natural Resources NR310",
+    "building": "Natural Resources",
+    "room": "NR310",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "20",
+    "type": "lab",
+    "name": "Computer Lab \u2013 Engineering Atrium",
+    "building": "Engineering",
+    "room": "Atrium",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "21",
+    "type": "restroom",
+    "name": "Restroom \u2013 Biology B201",
+    "building": "Biology",
+    "room": "B201",
+    "notes": "Accessible restroom nearby.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "22",
+    "type": "parking",
+    "name": "Parking \u2013 Natural Resources Lot",
+    "building": "Natural Resources",
+    "room": "NR210",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "23",
+    "type": "restroom",
+    "name": "Restroom \u2013 CS Building 310",
+    "building": "CS Building",
+    "room": "310",
+    "notes": "Accessible restroom nearby.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "24",
+    "type": "study",
+    "name": "Study Room \u2013 Anatomy/Zoology A220",
+    "building": "Anatomy/Zoology",
+    "room": "A220",
+    "notes": "Quiet study space; check-in required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "18:00"
+      }
+    }
+  },
+  {
+    "id": "25",
+    "type": "library",
+    "name": "Library \u2013 Clark",
+    "building": "Clark",
+    "room": "C205",
+    "notes": "Circulation, study areas, and research help.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "26",
+    "type": "water",
+    "name": "Water Fountain \u2013 Natural Resources NR210",
+    "building": "Natural Resources",
+    "room": "NR210",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "27",
+    "type": "parking",
+    "name": "Parking \u2013 Natural Resources Lot",
+    "building": "Natural Resources",
+    "room": "NR101",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "28",
+    "type": "parking",
+    "name": "Parking \u2013 Morgan Library Lot",
+    "building": "Morgan Library",
+    "room": "240B",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "29",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 CS Building",
+    "building": "CS Building",
+    "room": "205",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "30",
+    "type": "cafeteria",
+    "name": "Cafe \u2013 Behavioral Sciences",
+    "building": "Behavioral Sciences",
+    "room": "1st Floor",
+    "notes": "Hot meals, coffee, and grab\u2011n\u2011go.",
+    "hours": {
+      "Mon": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Tue": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Wed": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Thu": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Fri": {
+        "open": "07:30",
+        "close": "19:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "16:00"
+      }
+    }
+  },
+  {
+    "id": "31",
+    "type": "lab",
+    "name": "Computer Lab \u2013 Clark Lobby",
+    "building": "Clark",
+    "room": "Lobby",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "32",
+    "type": "restroom",
+    "name": "Restroom \u2013 Chemistry Lobby",
+    "building": "Chemistry",
+    "room": "Lobby",
+    "notes": "Accessible restroom nearby.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "33",
+    "type": "cafeteria",
+    "name": "Cafe \u2013 Anatomy/Zoology",
+    "building": "Anatomy/Zoology",
+    "room": "A330",
+    "notes": "Hot meals, coffee, and grab\u2011n\u2011go.",
+    "hours": {
+      "Mon": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Tue": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Wed": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Thu": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Fri": {
+        "open": "07:30",
+        "close": "19:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "16:00"
+      }
+    }
+  },
+  {
+    "id": "34",
+    "type": "water",
+    "name": "Water Fountain \u2013 Clark C205",
+    "building": "Clark",
+    "room": "C205",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "35",
+    "type": "printer",
+    "name": "Printer \u2013 Engineering Atrium",
+    "building": "Engineering",
+    "room": "Atrium",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "36",
+    "type": "study",
+    "name": "Study Room \u2013 Clark C205",
+    "building": "Clark",
+    "room": "C205",
+    "notes": "Quiet study space; check-in required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "18:00"
+      }
+    }
+  },
+  {
+    "id": "37",
+    "type": "vending",
+    "name": "Vending \u2013 Anatomy/Zoology Atrium",
+    "building": "Anatomy/Zoology",
+    "room": "Atrium",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "38",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Biology",
+    "building": "Biology",
+    "room": "",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "39",
+    "type": "printer",
+    "name": "Printer \u2013 Chemistry C101",
+    "building": "Chemistry",
+    "room": "C101",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "40",
+    "type": "water",
+    "name": "Water Fountain \u2013 Natural Resources NR310",
+    "building": "Natural Resources",
+    "room": "NR310",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "41",
+    "type": "parking",
+    "name": "Parking \u2013 Natural Resources Lot",
+    "building": "Natural Resources",
+    "room": "NR101",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "42",
+    "type": "library",
+    "name": "Library \u2013 Clark",
+    "building": "Clark",
+    "room": "",
+    "notes": "Circulation, study areas, and research help.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "43",
+    "type": "restroom",
+    "name": "Restroom \u2013 Statistics ST210",
+    "building": "Statistics",
+    "room": "ST210",
+    "notes": "Accessible restroom nearby.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "44",
+    "type": "vending",
+    "name": "Vending \u2013 Chemistry C315",
+    "building": "Chemistry",
+    "room": "C315",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "45",
+    "type": "water",
+    "name": "Water Fountain \u2013 Natural Resources NR210",
+    "building": "Natural Resources",
+    "room": "NR210",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "46",
+    "type": "parking",
+    "name": "Parking \u2013 Clark Lot",
+    "building": "Clark",
+    "room": "",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "47",
+    "type": "printer",
+    "name": "Printer \u2013 Chemistry C315",
+    "building": "Chemistry",
+    "room": "C315",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "48",
+    "type": "printer",
+    "name": "Printer \u2013 Behavioral Sciences North Wing",
+    "building": "Behavioral Sciences",
+    "room": "North Wing",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "49",
+    "type": "restroom",
+    "name": "Restroom \u2013 Lory Student Center South Hall",
+    "building": "Lory Student Center",
+    "room": "South Hall",
+    "notes": "Accessible restroom nearby.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "50",
+    "type": "lab",
+    "name": "Computer Lab \u2013 Morgan Library 1st Floor",
+    "building": "Morgan Library",
+    "room": "1st Floor",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "51",
+    "type": "vending",
+    "name": "Vending \u2013 Engineering Basement",
+    "building": "Engineering",
+    "room": "Basement",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "52",
+    "type": "vending",
+    "name": "Vending \u2013 Behavioral Sciences South Wing",
+    "building": "Behavioral Sciences",
+    "room": "South Wing",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "53",
+    "type": "library",
+    "name": "Library \u2013 Clark",
+    "building": "Clark",
+    "room": "Lobby",
+    "notes": "Circulation, study areas, and research help.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "54",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Chemistry",
+    "building": "Chemistry",
+    "room": "",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "55",
+    "type": "lab",
+    "name": "Computer Lab \u2013 Chemistry C315",
+    "building": "Chemistry",
+    "room": "C315",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "56",
+    "type": "parking",
+    "name": "Parking \u2013 Biology Lot",
+    "building": "Biology",
+    "room": "",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "57",
+    "type": "vending",
+    "name": "Vending \u2013 Behavioral Sciences South Wing",
+    "building": "Behavioral Sciences",
+    "room": "South Wing",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "58",
+    "type": "vending",
+    "name": "Vending \u2013 CS Building 205",
+    "building": "CS Building",
+    "room": "205",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "59",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Morgan Library",
+    "building": "Morgan Library",
+    "room": "1st Floor",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "60",
+    "type": "printer",
+    "name": "Printer \u2013 CS Building 310",
+    "building": "CS Building",
+    "room": "310",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "61",
+    "type": "printer",
+    "name": "Printer \u2013 Statistics ST210",
+    "building": "Statistics",
+    "room": "ST210",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "62",
+    "type": "printer",
+    "name": "Printer \u2013 Engineering E101",
+    "building": "Engineering",
+    "room": "E101",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "63",
+    "type": "water",
+    "name": "Water Fountain \u2013 Engineering South Entrance",
+    "building": "Engineering",
+    "room": "South Entrance",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "64",
+    "type": "library",
+    "name": "Library \u2013 Rockwell",
+    "building": "Rockwell",
+    "room": "",
+    "notes": "Circulation, study areas, and research help.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "65",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Statistics",
+    "building": "Statistics",
+    "room": "Common Room",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "66",
+    "type": "cafeteria",
+    "name": "Cafe \u2013 Behavioral Sciences",
+    "building": "Behavioral Sciences",
+    "room": "South Wing",
+    "notes": "Hot meals, coffee, and grab\u2011n\u2011go.",
+    "hours": {
+      "Mon": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Tue": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Wed": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Thu": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Fri": {
+        "open": "07:30",
+        "close": "19:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "16:00"
+      }
+    }
+  },
+  {
+    "id": "67",
+    "type": "cafeteria",
+    "name": "Cafe \u2013 Natural Resources",
+    "building": "Natural Resources",
+    "room": "NR310",
+    "notes": "Hot meals, coffee, and grab\u2011n\u2011go.",
+    "hours": {
+      "Mon": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Tue": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Wed": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Thu": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Fri": {
+        "open": "07:30",
+        "close": "19:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "16:00"
+      }
+    }
+  },
+  {
+    "id": "68",
+    "type": "printer",
+    "name": "Printer \u2013 Behavioral Sciences North Wing",
+    "building": "Behavioral Sciences",
+    "room": "North Wing",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "69",
+    "type": "cafeteria",
+    "name": "Cafe \u2013 Morgan Library",
+    "building": "Morgan Library",
+    "room": "2nd Floor",
+    "notes": "Hot meals, coffee, and grab\u2011n\u2011go.",
+    "hours": {
+      "Mon": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Tue": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Wed": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Thu": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Fri": {
+        "open": "07:30",
+        "close": "19:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "16:00"
+      }
+    }
+  },
+  {
+    "id": "70",
+    "type": "lab",
+    "name": "Computer Lab \u2013 Engineering South Entrance",
+    "building": "Engineering",
+    "room": "South Entrance",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "71",
+    "type": "water",
+    "name": "Water Fountain \u2013 CS Building 120",
+    "building": "CS Building",
+    "room": "120",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "72",
+    "type": "cafeteria",
+    "name": "Cafe \u2013 Clark",
+    "building": "Clark",
+    "room": "A102",
+    "notes": "Hot meals, coffee, and grab\u2011n\u2011go.",
+    "hours": {
+      "Mon": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Tue": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Wed": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Thu": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Fri": {
+        "open": "07:30",
+        "close": "19:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "16:00"
+      }
+    }
+  },
+  {
+    "id": "73",
+    "type": "vending",
+    "name": "Vending \u2013 CS Building 120",
+    "building": "CS Building",
+    "room": "120",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "74",
+    "type": "vending",
+    "name": "Vending \u2013 Chemistry C101",
+    "building": "Chemistry",
+    "room": "C101",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "75",
+    "type": "water",
+    "name": "Water Fountain \u2013 Natural Resources NR101",
+    "building": "Natural Resources",
+    "room": "NR101",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "76",
+    "type": "lab",
+    "name": "Computer Lab \u2013 Engineering South Entrance",
+    "building": "Engineering",
+    "room": "South Entrance",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "77",
+    "type": "library",
+    "name": "Library \u2013 Biology",
+    "building": "Biology",
+    "room": "B201",
+    "notes": "Circulation, study areas, and research help.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "78",
+    "type": "printer",
+    "name": "Printer \u2013 Biology North Wing",
+    "building": "Biology",
+    "room": "North Wing",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "79",
+    "type": "printer",
+    "name": "Printer \u2013 Biology B201",
+    "building": "Biology",
+    "room": "B201",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "80",
+    "type": "library",
+    "name": "Library \u2013 Rockwell",
+    "building": "Rockwell",
+    "room": "Room 118",
+    "notes": "Circulation, study areas, and research help.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "81",
+    "type": "water",
+    "name": "Water Fountain \u2013 Statistics Common Room",
+    "building": "Statistics",
+    "room": "Common Room",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "82",
+    "type": "lab",
+    "name": "Computer Lab \u2013 Clark B101",
+    "building": "Clark",
+    "room": "B101",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "83",
+    "type": "printer",
+    "name": "Printer \u2013 CS Building Dev Lab",
+    "building": "CS Building",
+    "room": "Dev Lab",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "84",
+    "type": "water",
+    "name": "Water Fountain \u2013 Statistics ST101",
+    "building": "Statistics",
+    "room": "ST101",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "85",
+    "type": "parking",
+    "name": "Parking \u2013 Statistics Lot",
+    "building": "Statistics",
+    "room": "ST101",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "86",
+    "type": "water",
+    "name": "Water Fountain \u2013 Behavioral Sciences South Wing",
+    "building": "Behavioral Sciences",
+    "room": "South Wing",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "87",
+    "type": "water",
+    "name": "Water Fountain \u2013 Morgan Library Help Desk",
+    "building": "Morgan Library",
+    "room": "Help Desk",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "88",
+    "type": "vending",
+    "name": "Vending \u2013 Clark Lobby",
+    "building": "Clark",
+    "room": "Lobby",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "89",
+    "type": "lab",
+    "name": "Computer Lab \u2013 Engineering E210",
+    "building": "Engineering",
+    "room": "E210",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "90",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Engineering",
+    "building": "Engineering",
+    "room": "",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "91",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Morgan Library",
+    "building": "Morgan Library",
+    "room": "Help Desk",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "92",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Anatomy/Zoology",
+    "building": "Anatomy/Zoology",
+    "room": "",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "93",
+    "type": "parking",
+    "name": "Parking \u2013 CS Building Lot",
+    "building": "CS Building",
+    "room": "301",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "94",
+    "type": "restroom",
+    "name": "Restroom \u2013 Clark C205",
+    "building": "Clark",
+    "room": "C205",
+    "notes": "Accessible restroom nearby.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "95",
+    "type": "vending",
+    "name": "Vending \u2013 Lory Student Center Bookstore Level",
+    "building": "Lory Student Center",
+    "room": "Bookstore Level",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "96",
+    "type": "bikerack",
+    "name": "Bike Rack \u2013 Behavioral Sciences",
+    "building": "Behavioral Sciences",
+    "room": "North Wing",
+    "notes": "Secure bike parking area.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "97",
+    "type": "water",
+    "name": "Water Fountain \u2013 CS Building 205",
+    "building": "CS Building",
+    "room": "205",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "98",
+    "type": "parking",
+    "name": "Parking \u2013 Clark Lot",
+    "building": "Clark",
+    "room": "",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "99",
+    "type": "restroom",
+    "name": "Restroom \u2013 Lory Student Center South Hall",
+    "building": "Lory Student Center",
+    "room": "South Hall",
+    "notes": "Accessible restroom nearby.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "100",
+    "type": "water",
+    "name": "Water Fountain \u2013 Behavioral Sciences Main Hall",
+    "building": "Behavioral Sciences",
+    "room": "Main Hall",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "101",
+    "type": "water",
+    "name": "Water Fountain \u2013 Anatomy/Zoology A101",
+    "building": "Anatomy/Zoology",
+    "room": "A101",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "102",
+    "type": "water",
+    "name": "Water Fountain \u2013 Natural Resources NR310",
+    "building": "Natural Resources",
+    "room": "NR310",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "103",
+    "type": "vending",
+    "name": "Vending \u2013 Natural Resources NR210",
+    "building": "Natural Resources",
+    "room": "NR210",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "104",
+    "type": "vending",
+    "name": "Vending \u2013 Rockwell West 1st Fl",
+    "building": "Rockwell",
+    "room": "West 1st Fl",
+    "notes": "Snacks & drinks. Card accepted.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "105",
+    "type": "water",
+    "name": "Water Fountain \u2013 Statistics ST210",
+    "building": "Statistics",
+    "room": "ST210",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "106",
+    "type": "restroom",
+    "name": "Restroom \u2013 Rockwell East 2nd Fl",
+    "building": "Rockwell",
+    "room": "East 2nd Fl",
+    "notes": "Accessible restroom nearby.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "107",
+    "type": "parking",
+    "name": "Parking \u2013 Statistics Lot",
+    "building": "Statistics",
+    "room": "",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "108",
+    "type": "water",
+    "name": "Water Fountain \u2013 Rockwell Lobby",
+    "building": "Rockwell",
+    "room": "Lobby",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "109",
+    "type": "printer",
+    "name": "Printer \u2013 Rockwell West 1st Fl",
+    "building": "Rockwell",
+    "room": "West 1st Fl",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "110",
+    "type": "cafeteria",
+    "name": "Cafe \u2013 Natural Resources",
+    "building": "Natural Resources",
+    "room": "NR310",
+    "notes": "Hot meals, coffee, and grab\u2011n\u2011go.",
+    "hours": {
+      "Mon": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Tue": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Wed": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Thu": {
+        "open": "07:30",
+        "close": "19:30"
+      },
+      "Fri": {
+        "open": "07:30",
+        "close": "19:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "16:00"
+      }
+    }
+  },
+  {
+    "id": "111",
+    "type": "study",
+    "name": "Study Room \u2013 Lory Student Center Info Desk",
+    "building": "Lory Student Center",
+    "room": "Info Desk",
+    "notes": "Quiet study space; check-in required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "18:00"
+      }
+    }
+  },
+  {
+    "id": "112",
+    "type": "library",
+    "name": "Library \u2013 Clark",
+    "building": "Clark",
+    "room": "",
+    "notes": "Circulation, study areas, and research help.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "113",
+    "type": "printer",
+    "name": "Printer \u2013 Chemistry C101",
+    "building": "Chemistry",
+    "room": "C101",
+    "notes": "B&W and color printer. ID card required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "114",
+    "type": "study",
+    "name": "Study Room \u2013 Engineering E305",
+    "building": "Engineering",
+    "room": "E305",
+    "notes": "Quiet study space; check-in required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "18:00"
+      }
+    }
+  },
+  {
+    "id": "115",
+    "type": "parking",
+    "name": "Parking \u2013 Morgan Library Lot",
+    "building": "Morgan Library",
+    "room": "",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "116",
+    "type": "study",
+    "name": "Study Room \u2013 Biology Link",
+    "building": "Biology",
+    "room": "Link",
+    "notes": "Quiet study space; check-in required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "18:00"
+      }
+    }
+  },
+  {
+    "id": "117",
+    "type": "parking",
+    "name": "Parking \u2013 Rockwell Lot",
+    "building": "Rockwell",
+    "room": "",
+    "notes": "Permit required during posted hours.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    }
+  },
+  {
+    "id": "118",
+    "type": "lab",
+    "name": "Computer Lab \u2013 CS Building 310",
+    "building": "CS Building",
+    "room": "310",
+    "notes": "Workstations with campus login.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    }
+  },
+  {
+    "id": "119",
+    "type": "water",
+    "name": "Water Fountain \u2013 Lory Student Center Theater Level",
+    "building": "Lory Student Center",
+    "room": "Theater Level",
+    "notes": "Bottle filler and fountain.",
+    "hours": {
+      "Mon": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  },
+  {
+    "id": "120",
+    "type": "study",
+    "name": "Study Room \u2013 Anatomy/Zoology A220",
+    "building": "Anatomy/Zoology",
+    "room": "A220",
+    "notes": "Quiet study space; check-in required.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "18:00"
+      }
+    }
+  },
+  {
+    "type": "printer",
+    "name": "Printer \u2013 Morgan Library 1st Floor",
+    "building": "Morgan Library",
+    "room": "Help Desk",
+    "notes": "B&W and color printer near the central help desk.",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sun": {
+        "open": "10:00",
+        "close": "22:00"
+      }
+    },
+    "id": "121"
+  },
+  {
+    "type": "vending",
+    "name": "Vending \u2013 Engineering Atrium",
+    "building": "Engineering",
+    "room": "South Entrance",
+    "notes": "Snacks & drinks by the south doors.",
+    "hours": {
+      "Mon": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Tue": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Wed": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Thu": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Fri": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sat": {
+        "open": "00:00",
+        "close": "23:59"
+      },
+      "Sun": {
+        "open": "00:00",
+        "close": "23:59"
+      }
+    },
+    "id": "122"
+  },
+  {
+    "type": "study",
+    "name": "Study Room \u2013 Clark A208",
+    "building": "Clark",
+    "room": "A208",
+    "notes": "Quiet group study (4 seats).",
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "18:00"
+      }
+    },
+    "id": "123"
+  },
+  {
+    "type": "lab",
+    "name": "CS Lab \u2013 Software Development",
+    "building": "CS Building",
+    "room": "310",
+    "notes": "Linux workstations; NetID required.",
+    "hours": {
+      "Mon": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "09:00",
+        "close": "17:00"
+      },
+      "Sat": {
+        "closed": true
+      },
+      "Sun": {
+        "closed": true
+      }
+    },
+    "id": "124"
+  }
+]

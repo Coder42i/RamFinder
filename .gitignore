@@ -1,0 +1,42 @@
+# macOS system files
+.DS_Store
+
+# Logs
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# PyCharm
+**/.idea/
+.idea/
+
+# Node modules
+node_modules/
+
+# Meeting recordings
+*.mp4
+
+# Environment/config files
+.env
+
+# Obsidian
+.obsidian/
+
+# RDP
+*.rdp
+
+# KNIME, CIS575
+FA25/cis575/knime-workspace/.*
+
+# Packages
+*.pkg
+*.dmg
+*.deb
+
+# VIM
+*.swp
+
+# Temp
+**/~$*.*
