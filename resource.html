@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +15,10 @@
         <div class="subtitle" id="subtitle"></div>
         <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Details</span></nav>
       </div>
+      <!-- NEW: session UI -->
+      <div id="userbox" class="badge"></div>
+      <a id="loginLink" class="btn" href="login.html" style="width:auto">Log in</a>
+      <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
     </header>
 
     <section id="content">
@@ -46,6 +49,32 @@
 
     <footer><div>Find more resources from the home page.</div></footer>
   </div>
+
+  <!-- NEW: localStorage + auth helpers -->
+  <script src="assets/store.js"></script>
+  <script src="assets/auth.js"></script>
+  <script>
+    (async function initHeader(){
+      const sess = AUTH.current();
+      const userbox   = document.getElementById('userbox');
+      const loginLink = document.getElementById('loginLink');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      if (sess) {
+        userbox.textContent = (sess.admin ? 'Admin • ' : '') + (sess.email || '');
+        loginLink.style.display = 'none';
+        logoutBtn.style.display  = 'inline-block';
+        logoutBtn.addEventListener('click', () => {
+          AUTH.logout();
+          window.location.href = 'index.html';
+        });
+      } else {
+        userbox.textContent = 'Guest';
+        loginLink.style.display = 'inline-block';
+        logoutBtn.style.display  = 'none';
+      }
+    })();
+  </script>
 
   <script>
     const DATA_URL='data/resources.json'; const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];

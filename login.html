@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in • RamFinder</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo" aria-hidden="true">RF</div>
+      <div style="flex:1">
+        <h1>Sign in</h1>
+        <div class="subtitle">Guests can browse without signing in.</div>
+        <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Sign in</span></nav>
+      </div>
+    </header>
+
+    <section>
+      <div class="card" style="max-width:520px">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="you@colostate.edu"
+               style="background:#0f182b;border:1px solid #26324d;border-radius:8px;color:#e7edf7;padding:10px" />
+        <div style="height:10px"></div>
+        <label>Name (optional)</label>
+        <input id="name" type="text" placeholder="Your name"
+               style="background:#0f182b;border:1px solid #26324d;border-radius:8px;color:#e7edf7;padding:10px" />
+        <div style="height:16px"></div>
+        <button id="signin" class="btn" style="width:fit-content">Sign in</button>
+        <div id="msg" class="subtitle" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <footer><div class="subtitle">Your session is stored in this browser. You can sign out anytime.</div></footer>
+  </div>
+
+  <script src="assets/store.js"></script>
+  <script src="assets/auth.js"></script>
+  <script>
+    const email  = document.getElementById('email');
+    const nameEl = document.getElementById('name');
+    const btn    = document.getElementById('signin');
+    const msg    = document.getElementById('msg');
+
+    btn.addEventListener('click', async () => {
+      msg.textContent = ''; btn.disabled = true;
+      try {
+        const sess = await AUTH.login(email.value, nameEl.value);
+        msg.textContent = (sess.admin ? 'Signed in as admin: ' : 'Signed in: ') + sess.email;
+        setTimeout(() => window.location.href = 'index.html', 600);
+      } catch (e) {
+        msg.textContent = e.message || 'Sign-in failed.';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
