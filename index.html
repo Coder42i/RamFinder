@@ -8,23 +8,26 @@
 </head>
 <body>
   <div class="container">
-    <header>
-      <div class="logo" aria-hidden="true">RF</div>
-      <div>
-        <h1>RamFinder – Campus Resources</h1>
-        <div class="subtitle">Search resources, see what’s open now, get directions, and save favorites.</div>
-        <nav class="breadcrumb"><a href="index.html">Home</a></nav>
-      </div>
-      <div id="userbox" class="badge"></div>
 
-      <!-- Theme toggle button -->
-      <button id="themeToggle" class="btn secondary icon-btn" type="button" title="Switch to dark mode">🌙</button>
+<header class="app-header">
+  <div class="brand-block">
+    <div class="logo" aria-hidden="true">RF</div>
+    <div class="brand-text">
+      <h1>RamFinder – Campus Resources</h1>
+      <div class="subtitle">Search resources, see what’s open now, get directions, and save favorites.</div>
+      <nav class="breadcrumb"><a href="index.html">Home</a></nav>
+    </div>
+  </div>
 
-      <a id="favLink" class="btn" href="favorites.html" style="width:auto; display:none">Favorites</a>
-      <a id="loginLink" class="btn" href="login.html" style="width:auto">Log in</a>
-      <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
-      <a id="adminLink" class="btn" href="admin.html" style="width:auto; display:none">Admin</a>
-    </header>
+  <div class="header-actions">
+    <div id="userbox" class="badge">Guest</div>
+    <button id="themeToggle" class="btn secondary icon-btn" type="button" title="Switch to dark mode">🌙</button>
+    <a id="favLink" class="btn" href="favorites.html" style="display:none">Favorites</a>
+    <a id="loginLink" class="btn" href="login.html">Log in</a>
+    <button id="logoutBtn" class="btn" style="display:none">Log out</button>
+    <a id="adminLink" class="btn" href="admin.html" style="display:none">Admin</a>
+  </div>
+</header>
 
     <section aria-label="Search tools">
       <div class="searchbar" role="search">

@@ -369,3 +369,139 @@ a{color:var(--csu-green);font-weight:600;}
 /* ---- Utility ---- */
 [data-theme="dark"] mark{background:#444;color:#fff;}
 mark{background:#fffcc0;}
+
+/* ===== Enhanced Header Layout & Polish ===== */
+.app-header{
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  backdrop-filter: saturate(1.1) blur(6px);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 0 12px;
+  margin-bottom: 8px;
+}
+
+.app-header{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Brand (left) */
+.app-header .brand{
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+.app-header .logo{
+  width: 42px; height: 42px; font-size: 20px;
+}
+.app-header .brand-text h1{
+  font-size: 24px; line-height: 1.15; margin-bottom: 2px;
+}
+.app-header .subtitle{
+  margin-top: 2px; font-size: 14px; color: var(--muted);
+}
+.app-header .breadcrumb{
+  margin-top: 4px; font-size: 13px;
+}
+.app-header .breadcrumb a{ font-weight: 600; }
+
+/* Actions (right) */
+.header-actions{
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+.header-actions .badge{
+  background: var(--csu-cream);
+  color: var(--csu-green);
+  font-weight: 700;
+  padding: 6px 10px;
+}
+.header-actions .btn{
+  height: 34px;
+}
+.header-actions .icon-btn{
+  width: 34px; height: 34px; border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+/* Subtle “lift” shadow once you scroll past the header */
+@supports (animation-timeline: scroll()){
+  .app-header { box-shadow: 0 0 0 rgba(0,0,0,0); }
+  .app-header.scrolled { box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+}
+@media (max-width: 720px){
+  .app-header{
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .header-actions{ justify-content: flex-start; flex-wrap: wrap; }
+}
+
+/* Searchbar: integrate input + Clear as a single pill */
+.searchbar{
+  margin-top: 10px;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.searchbar input[type="search"]{
+  border: none;
+  padding: 12px 14px;
+}
+.searchbar button{
+  border: none;
+  border-left: 1px solid var(--line);
+  padding: 12px 14px;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* Make the divider under the header lighter */
+.container > hr, header + * {
+  border-color: color-mix(in oklab, var(--line) 70%, transparent);
+}
+
+/* ===== Green Brand Block ===== */
+.brand-block{
+  background: var(--csu-green);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.brand-block .logo{
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.25);
+}
+
+.brand-block .brand-text h1{
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.brand-block .subtitle{
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+}
+
+.brand-block .breadcrumb a{
+  color: #f4f2df;
+  font-weight: 600;
+  text-decoration: none;
+}
+.brand-block .breadcrumb a:hover{
+  text-decoration: underline;
+}
