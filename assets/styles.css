@@ -1,6 +1,6 @@
 /* =========================================================
-   RamFinder UI — CSU-inspired theme
-   Palette (inspired by CSU brand):
+   RamFinder UI — CSU-inspired theme with manual light/dark toggle
+   Palette:
    --csu-green:   #1E4D2B
    --csu-green-2: #2F6B3E
    --csu-gold:    #C8C372
@@ -19,36 +19,35 @@
   --csu-green-2: #2F6B3E;
   --csu-gold:    #C8C372;
   --csu-cream:   #F7F6EE;
-  --ink:         #12301D;
-  --ink-2:       #2a2a2a;
-  --muted:       #6b7280;
-  --line:        #E5E7EB;
-  --bg:          #ffffff;
-  --card:        #ffffff;
-  --shadow:      0 2px 10px rgba(0,0,0,.06);
+
+  /* Light (default) */
+  --bg:     #ffffff;
+  --card:   #ffffff;
+  --ink:    #12301D;
+  --ink-2:  #2a2a2a;
+  --muted:  #6b7280;
+  --line:   #E5E7EB;
+  --shadow: 0 2px 10px rgba(0,0,0,.06);
 
   --radius: 14px;
   --radius-sm: 10px;
-
   --focus-ring: 0 0 0 3px rgba(30,77,43,.2);
   --focus-ring-strong: 0 0 0 3px rgba(200,195,114,.32);
   --transition: 160ms ease;
 }
 
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:        #0d1410;
-    --card:      #101a13;
-    --ink:       #e7f0ea;
-    --ink-2:     #dfe7e2;
-    --muted:     #9aa6a1;
-    --line:      #223427;
-    --shadow:    0 2px 14px rgba(0,0,0,.28);
-  }
+/* Dark theme (enabled by data attribute, not OS setting) */
+:root[data-theme="dark"]{
+  --bg:     #0d1410;
+  --card:   #101a13;
+  --ink:    #e7f0ea;
+  --ink-2:  #dfe7e2;
+  --muted:  #9aa6a1;
+  --line:   #223427;
+  --shadow: 0 2px 14px rgba(0,0,0,.28);
 }
 
 /* -------- Base -------- */
-
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
@@ -60,14 +59,9 @@ body{
   -moz-osx-font-smoothing:grayscale;
 }
 
-.container{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px 18px 40px;
-}
+.container{ max-width: 1100px; margin: 0 auto; padding: 20px 18px 40px; }
 
 /* -------- Header -------- */
-
 header{
   display:flex; align-items:center; gap:16px; margin-bottom:18px;
   padding: 14px 16px;
@@ -76,14 +70,12 @@ header{
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-
 .logo{
   width:46px; height:46px; border-radius:999px; flex: 0 0 auto;
   display:grid; place-items:center;
   font-weight:800; color:#fff; background:var(--csu-green);
   box-shadow: inset 0 0 0 3px rgba(255,255,255,.45);
 }
-
 h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:.2px}
 .subtitle{color:var(--muted); font-size:14px}
 .breadcrumb{margin-top:4px}
@@ -91,7 +83,6 @@ h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:
 .breadcrumb a:hover{text-decoration:underline}
 
 /* User/status badges */
-
 .badge{
   margin-left:auto;
   border:1px solid var(--line);
@@ -101,7 +92,6 @@ h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:
 }
 
 /* -------- Buttons / Chips -------- */
-
 .btn{
   appearance:none; border:1px solid var(--csu-green);
   background:linear-gradient(0deg, var(--csu-green), var(--csu-green-2));
@@ -115,12 +105,17 @@ h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:
 .btn:active{ transform: translateY(0); }
 .btn[disabled]{ opacity:.55; cursor:not-allowed; }
 
+/* Secondary button (used for Theme toggle) */
 .btn.secondary{
   background: #fff; color: var(--csu-green);
   border-color: var(--csu-green-2);
   box-shadow:none;
 }
+:root[data-theme="dark"] .btn.secondary{
+  background: #0f1820; color:#e7f0ea; border-color:#3a5645;
+}
 .btn.secondary:hover{ background: var(--csu-cream); }
+:root[data-theme="dark"] .btn.secondary:hover{ background:#13231a; }
 
 .chips{display:flex; gap:8px; flex-wrap:wrap}
 .chip{
@@ -130,23 +125,22 @@ h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:
   border-radius:999px; padding:8px 12px; cursor:pointer;
   transition: background var(--transition), color var(--transition), border var(--transition), transform var(--transition);
 }
+:root[data-theme="dark"] .chip{ background:#0f1820; color:var(--ink); }
 .chip[aria-pressed="true"]{
   background: var(--csu-cream);
   border-color: var(--csu-gold);
   color: var(--ink);
   transform: translateY(-1px);
 }
-
-/* Focus styles */
-
-:where(a,button,input,select,textarea):focus{
-  outline: none;
-  box-shadow: var(--focus-ring);
+:root[data-theme="dark"] .chip[aria-pressed="true"]{
+  background:#243a2d; border-color:#3a5645; color:#e7f0ea;
 }
+
+/* Focus */
+:where(a,button,input,select,textarea):focus{ outline:none; box-shadow: var(--focus-ring); }
 :where(a,button).btn:focus{ box-shadow: var(--focus-ring-strong); }
 
 /* -------- Search & Controls -------- */
-
 .searchbar{
   display:flex; gap:10px; align-items:center;
   background: var(--card);
@@ -159,9 +153,7 @@ h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:
   flex:1; border:0; outline:0; background:transparent; padding:10px 12px;
   font-size:16px; color:var(--ink-2);
 }
-.searchbar button{
-  white-space:nowrap;
-}
+.searchbar button{ white-space:nowrap; }
 .controls{
   display:flex; gap:12px; align-items:center; justify-content:space-between; margin: 12px 2px 0;
   flex-wrap:wrap;
@@ -169,19 +161,13 @@ h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:
 .toggle{display:inline-flex; align-items:center; gap:8px; user-select:none}
 
 /* -------- Meta & helpers -------- */
-
 .meta{ margin: 12px 2px; color:var(--muted); font-size:14px; display:flex; gap:8px; align-items:center; }
 .kbd{ background:#f0f2f5; border:1px solid #e2e5ea; border-radius:6px; padding:1px 6px; }
 
 /* -------- Cards / Results -------- */
-
 .results{ display:grid; gap:14px; margin-top:12px; }
-@media (min-width: 720px){
-  .results{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (min-width: 1024px){
-  .results{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
+@media (min-width: 720px){ .results{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px){ .results{ grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
 .card{
   background: var(--card);
@@ -191,32 +177,18 @@ h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:
   box-shadow: var(--shadow);
 }
 
-.name{
-  font-weight: 800;
-  font-size: 18px;
-  margin: 2px 0 8px;
-  color: var(--ink-2);
-}
-
+.name{ font-weight:800; font-size:18px; margin:2px 0 8px; color:var(--ink-2); }
 .row{ display:flex; align-items:center; gap:8px; color:var(--ink-2); }
 .row + .row{ margin-top:6px; }
+.dot{ width:8px; height:8px; border-radius:999px; background: var(--csu-green-2); display:inline-block; }
 
-.dot{
-  width:8px; height:8px; border-radius:999px; background: var(--csu-green-2);
-  display:inline-block;
-}
-
-.actions{
-  display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;
-}
+.actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
 
 /* Status labels */
-
 .open{ color:#066e2f; font-weight:700; }
 .closed{ color:#9b1c1c; font-weight:700; }
 
 /* -------- Tables -------- */
-
 .table{
   width:100%; border-collapse: collapse; font-size:14px;
   border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
@@ -225,13 +197,13 @@ h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:
   text-align:left; font-weight:700; color:var(--ink); background: #F3F6F2;
   border-bottom:1px solid var(--line); padding:10px 12px;
 }
-.table td{
-  border-bottom:1px solid var(--line); padding:10px 12px; vertical-align:top;
+:root[data-theme="dark"] .table thead th{
+  background:#142219; color:var(--ink);
 }
+.table td{ border-bottom:1px solid var(--line); padding:10px 12px; vertical-align:top; }
 .table tr:last-child td{ border-bottom:0; }
 
 /* -------- Forms -------- */
-
 label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
 input[type="text"], input[type="email"], input[type="search"], input[type="time"], textarea, select{
   width:100%;
@@ -242,22 +214,26 @@ input[type="text"], input[type="email"], input[type="search"], input[type="time"
   color:var(--ink-2);
   transition: border var(--transition), box-shadow var(--transition), background var(--transition);
 }
+:root[data-theme="dark"] input[type="text"],
+:root[data-theme="dark"] input[type="email"],
+:root[data-theme="dark"] input[type="search"],
+:root[data-theme="dark"] input[type="time"],
+:root[data-theme="dark"] textarea,
+:root[data-theme="dark"] select{
+  background:#0f1820; color:var(--ink); border-color:#2a3e31;
+}
 input::placeholder, textarea::placeholder{ color:#9aa0a6 }
-input:focus, textarea:focus, select:focus{
-  border-color: var(--csu-green-2);
-  box-shadow: var(--focus-ring);
-  background:#fff;
+input:focus, textarea:focus, select:focus{ border-color: var(--csu-green-2); box-shadow: var(--focus-ring); background:#fff; }
+:root[data-theme="dark"] input:focus,
+:root[data-theme="dark"] textarea:focus,
+:root[data-theme="dark"] select:focus{
+  background:#0f1820;
 }
-textarea{ resize: vertical; }
 
-/* Hours grid cards inside admin form */
-#hoursGrid .card{
-  padding:10px;
-  border-radius: 10px;
-}
+/* Hours grid cards in admin form */
+#hoursGrid .card{ padding:10px; border-radius:10px; }
 
 /* -------- Empty state -------- */
-
 .empty{
   margin: 18px 2px;
   color: var(--muted);
@@ -266,55 +242,32 @@ textarea{ resize: vertical; }
   border-radius: var(--radius);
   background: #fafafa;
 }
+:root[data-theme="dark"] .empty{
+  background:#111a13; border-color:#2a3e31;
+}
 
 /* -------- Footer -------- */
-
-footer{
-  margin-top: 18px; color: var(--muted); font-size:14px;
-}
+footer{ margin-top: 18px; color: var(--muted); font-size:14px; }
 
 /* -------- Badges / Pills -------- */
+.badge.small{ padding:4px 8px; font-size:12px; }
 
-.badge.small{
-  padding:4px 8px; font-size:12px;
-}
-
-/* -------- Admin status badge colors -------- */
-
-.badge[style*="Backend: online"],
-#apiStatus.is-online{
-  color:#0f9d58; border-color:#0f9d58;
-}
-#apiStatus.is-offline{
-  color:#e11d48; border-color:#fecaca;
-}
+/* -------- Admin status badges (same) -------- */
+#apiStatus.is-online{ color:#0f9d58; border-color:#0f9d58; }
+#apiStatus.is-offline{ color:#e11d48; border-color:#fecaca; }
 
 /* -------- Links -------- */
-
 a{ color: var(--csu-green-2); }
 a:hover{ text-decoration: underline; }
 
 /* -------- Marks (search highlights) -------- */
+mark{ background: #fff4b8; color: inherit; padding: 0 .15em; border-radius: 4px; }
 
-mark{
-  background: #fff4b8;
-  color: inherit;
-  padding: 0 .15em;
-  border-radius: 4px;
-}
-
-/* -------- Utility spacing tweaks for pages -------- */
-
+/* -------- Utility tweaks -------- */
 header .btn{ width:auto; }
 .breadcrumb code{ background:#f0f2f5; padding:2px 6px; border-radius:6px; border:1px solid #e6e8eb; }
 
-/* -------- Accessibility: high-contrast focus on keyboard nav -------- */
-
-@media (hover:none){
-  .btn:hover{ transform:none; }
-}
-
-/* -------- Print tweaks (for rubric screenshots etc.) -------- */
+@media (hover:none){ .btn:hover{ transform:none; } }
 
 @media print{
   header, .controls, .searchbar, .actions, .chips { display:none !important; }
