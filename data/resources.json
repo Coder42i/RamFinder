@@ -4686,5 +4686,140 @@
       }
     },
     "id": "124"
+  },
+{
+  "id": "125",
+  "type": "medical",
+  "name": "Medical Provider – CSU Health Network Primary Care",
+  "building": "Hartshorn Health Center",
+  "room": "1st Floor",
+  "notes": "General primary care for students; appointments recommended.",
+  "hours": {
+    "Mon": {"open":"08:00","close":"17:00","closed":false},
+    "Tue": {"open":"08:00","close":"17:00","closed":false},
+    "Wed": {"open":"08:00","close":"17:00","closed":false},
+    "Thu": {"open":"08:00","close":"17:00","closed":false},
+    "Fri": {"open":"08:00","close":"17:00","closed":false},
+    "Sat": {"closed":true},
+    "Sun": {"closed":true}
   }
+},
+{
+  "id": "126",
+  "type": "medical",
+  "name": "Medical Provider – CSU Health Network Urgent Care",
+  "building": "Hartshorn Health Center",
+  "room": "Urgent Care",
+  "notes": "Same-day care for minor illness/injury; check current wait times.",
+  "hours": {
+    "Mon": {"open":"09:00","close":"18:00","closed":false},
+    "Tue": {"open":"09:00","close":"18:00","closed":false},
+    "Wed": {"open":"09:00","close":"18:00","closed":false},
+    "Thu": {"open":"09:00","close":"18:00","closed":false},
+    "Fri": {"open":"09:00","close":"18:00","closed":false},
+    "Sat": {"open":"10:00","close":"14:00","closed":false},
+    "Sun": {"closed":true}
+  }
+},
+{
+  "id": "127",
+  "type": "medical",
+  "name": "Medical Provider – CSU Counseling Services",
+  "building": "Lory Student Center",
+  "room": "Suite 3XX",
+  "notes": "Counseling and psychological services; by appointment; crisis support available.",
+  "hours": {
+    "Mon": {"open":"08:00","close":"18:00","closed":false},
+    "Tue": {"open":"08:00","close":"18:00","closed":false},
+    "Wed": {"open":"08:00","close":"18:00","closed":false},
+    "Thu": {"open":"08:00","close":"18:00","closed":false},
+    "Fri": {"open":"08:00","close":"17:00","closed":false},
+    "Sat": {"closed":true},
+    "Sun": {"closed":true}
+  }
+},
+{
+  "id": "128",
+  "type": "medical",
+  "name": "Medical Provider – CSU Physical Therapy Clinic",
+  "building": "Moby Complex",
+  "room": "PT Suite",
+  "notes": "Evaluation and treatment by licensed physical therapists.",
+  "hours": {
+    "Mon": {"open":"08:00","close":"17:00","closed":false},
+    "Tue": {"open":"08:00","close":"17:00","closed":false},
+    "Wed": {"open":"08:00","close":"17:00","closed":false},
+    "Thu": {"open":"08:00","close":"17:00","closed":false},
+    "Fri": {"open":"08:00","close":"16:00","closed":false},
+    "Sat": {"closed":true},
+    "Sun": {"closed":true}
+  }
+},
+{
+  "id": "129",
+  "type": "hospital",
+  "name": "Hospital – UCHealth Poudre Valley Hospital (Emergency Dept)",
+  "building": "Off Campus – Poudre Valley Hospital",
+  "room": "Emergency",
+  "notes": "Full-service hospital; emergency care 24/7.",
+  "hours": {
+    "Mon": {"open":"00:00","close":"23:59","closed":false},
+    "Tue": {"open":"00:00","close":"23:59","closed":false},
+    "Wed": {"open":"00:00","close":"23:59","closed":false},
+    "Thu": {"open":"00:00","close":"23:59","closed":false},
+    "Fri": {"open":"00:00","close":"23:59","closed":false},
+    "Sat": {"open":"00:00","close":"23:59","closed":false},
+    "Sun": {"open":"00:00","close":"23:59","closed":false}
+  }
+},
+{
+  "id": "130",
+  "type": "hospital",
+  "name": "Hospital – UCHealth Medical Center of the Rockies (Emergency Dept)",
+  "building": "Off Campus – MCR",
+  "room": "Emergency",
+  "notes": "Regional trauma services; emergency care 24/7.",
+  "hours": {
+    "Mon": {"open":"00:00","close":"23:59","closed":false},
+    "Tue": {"open":"00:00","close":"23:59","closed":false},
+    "Wed": {"open":"00:00","close":"23:59","closed":false},
+    "Thu": {"open":"00:00","close":"23:59","closed":false},
+    "Fri": {"open":"00:00","close":"23:59","closed":false},
+    "Sat": {"open":"00:00","close":"23:59","closed":false},
+    "Sun": {"open":"00:00","close":"23:59","closed":false}
+  }
+},
+{
+  "id": "131",
+  "type": "medical",
+  "name": "Medical Provider – CSU Occupational Health",
+  "building": "Facilities Management",
+  "room": "Clinic",
+  "notes": "Work-related care and screenings.",
+  "hours": {
+    "Mon": {"open":"08:00","close":"16:30","closed":false},
+    "Tue": {"open":"08:00","close":"16:30","closed":false},
+    "Wed": {"open":"08:00","close":"16:30","closed":false},
+    "Thu": {"open":"08:00","close":"16:30","closed":false},
+    "Fri": {"open":"08:00","close":"16:00","closed":false},
+    "Sat": {"closed":true},
+    "Sun": {"closed":true}
+  }
+},
+{
+  "id": "132",
+  "type": "medical",
+  "name": "Medical Provider – CSU Veterinary Teaching Hospital (Client Services)",
+  "building": "South Campus – VTH",
+  "room": "Client Services",
+  "notes": "Veterinary medical services and referrals.",
+  "hours": {
+    "Mon": {"open":"07:30","close":"18:00","closed":false},
+    "Tue": {"open":"07:30","close":"18:00","closed":false},
+    "Wed": {"open":"07:30","close":"18:00","closed":false},
+    "Thu": {"open":"07:30","close":"18:00","closed":false},
+    "Fri": {"open":"07:30","close":"17:00","closed":false},
+    "Sat": {"open":"08:00","close":"12:00","closed":false},
+    "Sun": {"closed":true}
+  }}
 ]
