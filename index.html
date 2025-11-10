@@ -17,7 +17,7 @@
       </div>
       <div id="userbox" class="badge"></div>
 
-      <!-- NEW: theme toggle button -->
+      <!-- Theme toggle button -->
       <button id="themeToggle" class="btn secondary icon-btn" type="button" title="Switch to dark mode">🌙</button>
 
       <a id="favLink" class="btn" href="favorites.html" style="width:auto; display:none">Favorites</a>
@@ -33,16 +33,12 @@
       </div>
 
       <div class="controls">
-        <label class="toggle"><input id="openNow" type="checkbox" /> Open Now</label>
-        <div class="chips" aria-label="Quick filters">
-          <button class="chip" data-chip="printer" aria-pressed="false">Printer</button>
-          <button class="chip" data-chip="vending" aria-pressed="false">Vending</button>
-          <button class="chip" data-chip="study" aria-pressed="false">Study Room</button>
-          <button class="chip" data-chip="lab" aria-pressed="false">Lab</button>
-          <button class="chip" data-chip="restroom" aria-pressed="false">Restroom</button>
-          <button class="chip" data-chip="medical" aria-pressed="false">Medical</button>
-          <button class="chip" data-chip="hospital" aria-pressed="false">Hospital</button>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap">
+          <label class="toggle"><input id="openNow" type="checkbox" /> Open Now</label>
+          <label class="toggle"><input id="groupedToggle" type="checkbox" checked /> Show results in separate groups</label>
         </div>
+        <!-- Chips are generated dynamically; they show only when needed in grouped mode -->
+        <div id="chips" class="chips" aria-label="Quick filters"></div>
       </div>
     </section>
 
@@ -52,11 +48,15 @@
       <span>Type <code class="kbd">/</code> to focus, <code class="kbd">Esc</code> to clear</span>
     </div>
 
+    <!-- In flat mode, we render cards directly into #results.
+         In grouped (accordion) mode, we render sections into #accordion. -->
     <section class="results" id="results" aria-label="Search results"></section>
+    <div id="accordion" class="group-accordion" aria-label="Grouped results"></div>
+
     <div id="empty" class="empty" hidden>No resources match your search.</div>
 
     <footer>
-      <div>Tip: Click a result to see details or open directions. Sign in to save favorites.</div>
+      <div>Tip: Click a category to expand it. Sign in to save favorites.</div>
     </footer>
   </div>
 
@@ -96,12 +96,20 @@
     })();
   </script>
 
-  <!-- Search + Favorites logic -->
+  <!-- Search + Favorites logic with dynamic chips & accordion groups -->
   <script>
     const DATA_URL = 'data/resources.json';
     const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-    const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    // Normalizers
+    const norm = (s) => (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const slug = (s) => norm(s).replace(/[^a-z0-9]+/g,''); // "Bike Rack" -> "bikerack"
+    const titleCase = (s) => {
+      const t = (s||'').toString().trim();
+      if (!t) return 'Other';
+      return t.replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1));
+    };
+
     function escapeHtml(str){return (str+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
     function escapeRegExp(str){return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');}
     function highlight(text, query){
@@ -111,7 +119,7 @@
       return escapeHtml(t).replace(re, '<mark>$1</mark>');
     }
     function isOpenNow(item, now=new Date()){
-      const dow = DOW[now.getDay()]; const slot = item.hours[dow];
+      const slot = item.hours?.[DOW[now.getDay()]];
       if(!slot || slot.closed) return false;
       const [oh, om] = (slot.open||'00:00').split(':').map(Number);
       const [ch, cm] = (slot.close||'00:00').split(':').map(Number);
@@ -119,16 +127,60 @@
       return curM>=openM && curM<=closeM;
     }
 
-    let DATA=[]; let activeChip=null;
-    const q=document.getElementById('q'), results=document.getElementById('results'), count=document.getElementById('count'),
-          empty=document.getElementById('empty'), clearBtn=document.getElementById('clearBtn'), openNow=document.getElementById('openNow'),
-          chips=Array.from(document.querySelectorAll('.chip'));
+    // State
+    let DATA=[]; 
+    let activeChip=null; // category slug when a chip is selected
+    let expandedGroup=null; // category slug when a group is expanded (accordion)
+    const q=document.getElementById('q'), results=document.getElementById('results'), accordion=document.getElementById('accordion'),
+          count=document.getElementById('count'), empty=document.getElementById('empty'),
+          clearBtn=document.getElementById('clearBtn'), openNow=document.getElementById('openNow'),
+          chipsWrap=document.getElementById('chips'), groupedToggle=document.getElementById('groupedToggle');
+
+    const typeMap = new Map(); // slug -> display label
+    function labelFor(sl){ return typeMap.get(sl) || titleCase(sl); }
+    function safeGroupedOn(){ return groupedToggle ? !!groupedToggle.checked : true; }
+
+    function buildTypeMap(){
+      typeMap.clear();
+      for(const r of DATA){
+        const sl = slug(r.type || 'other');
+        if(!typeMap.has(sl)){
+          const lbl = r.type ? r.type : 'Other';
+          typeMap.set(sl, titleCase(lbl));
+        }
+      }
+    }
+
+    function buildChips(){
+      // Chips represent categories; we show/hide based on accordion state.
+      const ORDER = ['printer','medical','hospital','study','lab','restroom','vending','bikerack','other'];
+      const present = Array.from(typeMap.keys());
+      const ordered = [
+        ...ORDER.filter(k => present.includes(k)),
+        ...present.filter(k => !ORDER.includes(k)).sort((a,b)=> labelFor(a).localeCompare(labelFor(b), undefined, {sensitivity:'base'}))
+      ];
+
+      chipsWrap.innerHTML = ordered.map(k => 
+        `<button class="chip" data-chip="${k}" aria-pressed="${activeChip===k?'true':'false'}">${escapeHtml(labelFor(k))}</button>`
+      ).join('');
+
+      chipsWrap.querySelectorAll('.chip').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const val=btn.dataset.chip;
+          const pressed=btn.getAttribute('aria-pressed')==='true';
+          chipsWrap.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
+          if(!pressed){ btn.setAttribute('aria-pressed','true'); activeChip=val; expandedGroup=val; }
+          else { activeChip=null; expandedGroup=null; }
+          doSearch(); // will render accordion with only that group expanded
+        });
+      });
+    }
 
     function filterData(query){
       const nq=norm(query);
       return DATA.filter(item=>{
         const hay=[item.name,item.type,item.building,item.room,item.notes].map(norm).join(' ');
-        const chipOk=activeChip?norm(item.type)===activeChip:true;
+        const chipOk=activeChip ? slug(item.type)===activeChip : true;
         const openOk=openNow.checked?isOpenNow(item):true;
         return chipOk&&openOk&&(nq===''||hay.includes(nq));
       });
@@ -141,18 +193,13 @@
       return `<button class="btn" data-action="fav" data-id="${id}" aria-pressed="${pressed}" ${disabled}>${label}</button>`;
     }
 
-    function render(list,query){
-      const sess = AUTH.current();
-      results.innerHTML='';
-      if(!list.length){count.textContent='0 results';results.hidden=true;empty.hidden=false;return;}
-      results.hidden=false;empty.hidden=true;count.textContent=`${list.length} result${list.length>1?'s':''}`;
-      const frag=document.createDocumentFragment();
-      for(const r of list){
-        const open=isOpenNow(r);
-        const isFav = !!(sess && FAVS.has(sess.email, r.id));
-        const el=document.createElement('article'); el.className='card';
-        el.innerHTML=`
-          <div class="badge">${escapeHtml(r.type[0].toUpperCase()+r.type.slice(1))}</div>
+    function cardHTML(r, query, sess){
+      const open=isOpenNow(r);
+      const isFav = !!(sess && FAVS.has(sess.email, r.id));
+      const lbl = labelFor(slug(r.type || 'other'));
+      return `
+        <article class="card">
+          <div class="badge">${escapeHtml(lbl)}</div>
           <div class="name"><a href="resource.html?id=${encodeURIComponent(r.id)}" style="color:inherit;text-decoration:none">${highlight(r.name,query)}</a></div>
           <div class="row"><span class="dot"></span><span>${highlight(r.building+(r.room?', '+r.room:''),query)}</span></div>
           <div class="row"><strong class="${open?'open':'closed'}">${open?'Open Now':'Closed'}</strong></div>
@@ -160,22 +207,131 @@
             <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
             <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a>
             ${favButtonHTML(!!sess, isFav, r.id)}
-          </div>`;
-        frag.appendChild(el);
+          </div>
+        </article>`;
+    }
+
+    // Flat render (original grid)
+    function renderFlat(list, query){
+      const sess = AUTH.current();
+      results.hidden = false;
+      accordion.hidden = true;
+      results.classList.remove('grouped');
+      chipsWrap.style.display = ''; // chips visible in flat mode
+      results.innerHTML='';
+      if(!list.length){count.textContent='0 results';results.hidden=true;empty.hidden=false;return;}
+      results.hidden=false;empty.hidden=true;count.textContent=`${list.length} result${list.length>1?'s':''}`;
+      results.innerHTML = list.map(r=>cardHTML(r,query,sess)).join('');
+    }
+
+    // Accordion render (grouped)
+    function renderAccordion(list, query){
+      const sess = AUTH.current();
+      results.hidden = true;
+      accordion.hidden = false;
+      chipsWrap.style.display = expandedGroup ? '' : 'none'; // hide chips until a group is open
+
+      // Build groups: slug -> items
+      const groups = new Map();
+      for (const r of list){
+        const key = slug(r.type || 'other');
+        if(!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(r);
       }
-      results.appendChild(frag);
+
+      // Order keys
+      const ORDER = ['printer','medical','hospital','study','lab','restroom','vending','bikerack','other'];
+      const present = Array.from(groups.keys());
+      const ordered = [
+        ...ORDER.filter(k => present.includes(k)),
+        ...present.filter(k => !ORDER.includes(k)).sort((a,b)=> labelFor(a).localeCompare(labelFor(b), undefined, {sensitivity:'base'}))
+      ];
+
+      // Count summary
+      const total = list.length;
+      const groupCount = ordered.length;
+      if(!total){count.textContent='0 results';accordion.innerHTML='';empty.hidden=false;return;}
+      empty.hidden=true;
+      count.textContent = `${total} result${total>1?'s':''} • ${groupCount} categor${groupCount>1?'ies':'y'}`;
+
+      // Render one category per line (collapsed by default)
+      accordion.innerHTML = ordered.map(key=>{
+        const items = groups.get(key).slice().sort((a,b)=> a.name.localeCompare(b.name));
+        const open = expandedGroup === key;
+        return `
+          <section class="acc-section" data-key="${key}">
+            <button class="acc-header" type="button" aria-expanded="${open?'true':'false'}">
+              <span class="acc-title">${escapeHtml(labelFor(key))}</span>
+              <span class="acc-count">${items.length}</span>
+              <span class="acc-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="acc-panel" ${open?'':'hidden'}>
+              <div class="results group-grid">
+                ${items.map(r=>cardHTML(r,query,sess)).join('')}
+              </div>
+            </div>
+          </section>`;
+      }).join('');
+
+      // Wire header clicks (accordion behavior)
+      accordion.querySelectorAll('.acc-header').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const sec = btn.closest('.acc-section');
+          const key = sec.getAttribute('data-key');
+          if (expandedGroup === key){
+            // collapse
+            expandedGroup = null;
+            activeChip = null;
+            buildChips(); // refresh chip pressed states
+            renderAccordion(filterData(q.value.trim()), q.value.trim());
+            return;
+          }
+          // expand this, collapse others
+          expandedGroup = key;
+          activeChip = key; // keep chips in sync
+          buildChips();     // refresh chips and pressed state
+          renderAccordion(filterData(q.value.trim()), q.value.trim());
+          // focus scroll into view
+          sec.scrollIntoView({behavior:'smooth', block:'start'});
+        });
+      });
+    }
+
+    function render(list,query){
+      try{
+        if (safeGroupedOn()) renderAccordion(list, query);
+        else renderFlat(list, query);
+      }catch(err){
+        console.error('Render error, falling back to flat:', err);
+        renderFlat(list, query);
+      }
     }
 
     function debounce(fn,ms=120){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
     const doSearch=debounce(()=>{render(filterData(q.value.trim()),q.value.trim());});
 
+    // Events
     q.addEventListener('input',doSearch);
-    clearBtn.addEventListener('click',()=>{q.value='';q.focus();doSearch();});
-    window.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}if(e.key==='Escape'){q.value='';doSearch();q.blur();}});
-    chips.forEach(btn=>btn.addEventListener('click',()=>{const val=btn.dataset.chip;const pressed=btn.getAttribute('aria-pressed')==='true';chips.forEach(c=>c.setAttribute('aria-pressed','false'));if(!pressed){btn.setAttribute('aria-pressed','true');activeChip=val;}else{activeChip=null;}doSearch();}));
+    clearBtn.addEventListener('click',()=>{
+      q.value=''; q.focus();
+      activeChip=null; expandedGroup=null;
+      buildChips();
+      doSearch();
+    });
+    window.addEventListener('keydown',e=>{
+      if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}
+      if(e.key==='Escape'){
+        q.value=''; activeChip=null; expandedGroup=null; buildChips(); doSearch(); q.blur();
+      }
+    });
+    if (groupedToggle) groupedToggle.addEventListener('change', ()=>{
+      // when switching modes, reset accordion state and chips visibility
+      expandedGroup=null; activeChip=null; buildChips(); doSearch();
+    });
+    openNow.addEventListener('change', ()=> doSearch());
 
-    // Favorite handler
-    results.addEventListener('click', (e) => {
+    // Favorites (delegated; works in both modes)
+    document.addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-action="fav"]');
       if (!btn) return;
       const sess = AUTH.current();
@@ -187,11 +343,18 @@
       btn.textContent = isFav ? '★ Favorited' : '☆ Favorite';
     });
 
-    async function init(){const res=await fetch(DATA_URL,{cache:'no-store'});DATA=await res.json();render(DATA,'');}
+    // Init
+    async function init(){
+      const res=await fetch(DATA_URL,{cache:'no-store'});
+      DATA=await res.json();
+      buildTypeMap();
+      buildChips();
+      doSearch();
+    }
     init();
   </script>
 
-  <!-- THEME INLINE (always light by default, button toggles dark) -->
+  <!-- THEME INLINE -->
   <script>
     (function(){
       const KEY = 'rf:theme';
@@ -209,15 +372,8 @@
           btn.textContent = dark ? '☀️' : '🌙';
         }
       }
-
       apply((localStorage.getItem(KEY) || 'light').toLowerCase());
-
-      if (btn) {
-        btn.addEventListener('click', () => {
-          const next = (ROOT.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
-          apply(next);
-        });
-      }
+      if (btn) btn.addEventListener('click', () => apply(ROOT.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
     })();
   </script>
 </body>
