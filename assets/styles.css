@@ -1,28 +1,322 @@
+/* =========================================================
+   RamFinder UI — CSU-inspired theme
+   Palette (inspired by CSU brand):
+   --csu-green:   #1E4D2B
+   --csu-green-2: #2F6B3E
+   --csu-gold:    #C8C372
+   --csu-cream:   #F7F6EE
+   --ink:         #12301D
+   --ink-2:       #2a2a2a
+   --muted:       #6b7280
+   --line:        #E5E7EB
+   --bg:          #ffffff
+   --card:        #ffffff
+   --shadow:      0 2px 10px rgba(0,0,0,.06)
+   ========================================================= */
 
-:root{--bg:#0b1220;--panel:#121a2b;--muted:#9aa6bf;--text:#e7edf7;--accent:#60a5fa;--good:#34d399;--border:#26324d}
-*{box-sizing:border-box}html,body{height:100%}
-body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:radial-gradient(1200px 800px at 20% -10%,#11203f 0%,var(--bg) 60%);color:var(--text)}
-.container{max-width:1100px;margin:0 auto;padding:24px}
-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--good));display:grid;place-items:center;font-weight:800;color:#071225}
-h1{margin:0;font-size:clamp(1.3rem,2.2vw,1.7rem)}.subtitle{color:var(--muted);font-size:.95rem}
-nav.breadcrumb{margin:10px 0 0;font-size:.9rem;color:var(--muted)}nav.breadcrumb a{color:var(--muted);text-decoration:none}nav.breadcrumb a:hover{color:var(--text)}
-.searchbar{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:10px 12px 10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-.searchbar input{background:transparent;border:none;outline:none;color:var(--text);font-size:1rem;width:100%}
-.searchbar button{background:var(--accent);color:#091427;border:none;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px}
-.toggle{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);padding:8px 10px;border-radius:12px;color:var(--muted);cursor:pointer}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{padding:6px 10px;border-radius:999px;font-size:.85rem;background:#0f182b;border:1px solid var(--border);color:var(--muted);cursor:pointer}
-.chip[aria-pressed="true"]{outline:2px solid var(--accent);color:var(--text)}
-.meta{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;margin:16px 2px 6px}
-.results{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:8px}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
-.badge{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;padding:5px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted);background:#0f182b}
-.name{font-weight:700;font-size:1.05rem}.row{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.92rem}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--muted);opacity:.6}
-.actions{margin-top:auto;display:flex;gap:8px}.btn{flex:1;text-align:center;background:#0e1530;color:var(--text);border:1px solid var(--border);padding:8px 10px;border-radius:10px;text-decoration:none}.btn:hover{border-color:var(--accent)}
-.open{color:var(--good);font-weight:700}.closed{color:#fca5a5;font-weight:700}
-mark{background:#fffaa1;color:#202020;padding:0 2px;border-radius:4px}.empty{color:var(--muted);text-align:center;padding:36px 8px}
-footer{color:var(--muted);font-size:.85rem;margin:32px 2px}.table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden}
-.table th,.table td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;color:var(--muted)}.table th{color:var(--text)}
+:root{
+  --csu-green:   #1E4D2B;
+  --csu-green-2: #2F6B3E;
+  --csu-gold:    #C8C372;
+  --csu-cream:   #F7F6EE;
+  --ink:         #12301D;
+  --ink-2:       #2a2a2a;
+  --muted:       #6b7280;
+  --line:        #E5E7EB;
+  --bg:          #ffffff;
+  --card:        #ffffff;
+  --shadow:      0 2px 10px rgba(0,0,0,.06);
+
+  --radius: 14px;
+  --radius-sm: 10px;
+
+  --focus-ring: 0 0 0 3px rgba(30,77,43,.2);
+  --focus-ring-strong: 0 0 0 3px rgba(200,195,114,.32);
+  --transition: 160ms ease;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:        #0d1410;
+    --card:      #101a13;
+    --ink:       #e7f0ea;
+    --ink-2:     #dfe7e2;
+    --muted:     #9aa6a1;
+    --line:      #223427;
+    --shadow:    0 2px 14px rgba(0,0,0,.28);
+  }
+}
+
+/* -------- Base -------- */
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+  color:var(--ink);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.container{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 18px 40px;
+}
+
+/* -------- Header -------- */
+
+header{
+  display:flex; align-items:center; gap:16px; margin-bottom:18px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  background: linear-gradient(0deg, var(--card), var(--card));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.logo{
+  width:46px; height:46px; border-radius:999px; flex: 0 0 auto;
+  display:grid; place-items:center;
+  font-weight:800; color:#fff; background:var(--csu-green);
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,.45);
+}
+
+h1{margin:0 0 4px 0; font-size: clamp(20px, 2.2vw + 10px, 28px); letter-spacing:.2px}
+.subtitle{color:var(--muted); font-size:14px}
+.breadcrumb{margin-top:4px}
+.breadcrumb a{color:var(--csu-green-2); text-decoration:none}
+.breadcrumb a:hover{text-decoration:underline}
+
+/* User/status badges */
+
+.badge{
+  margin-left:auto;
+  border:1px solid var(--line);
+  color:var(--csu-green-2);
+  background:linear-gradient(0deg, var(--csu-cream), #fff);
+  padding:6px 10px; border-radius:999px; font-size:13px;
+}
+
+/* -------- Buttons / Chips -------- */
+
+.btn{
+  appearance:none; border:1px solid var(--csu-green);
+  background:linear-gradient(0deg, var(--csu-green), var(--csu-green-2));
+  color:#fff; font-weight:600;
+  padding:10px 14px; border-radius:12px; cursor:pointer;
+  transition:transform var(--transition), box-shadow var(--transition), opacity var(--transition), background var(--transition);
+  box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 4px 10px rgba(30,77,43,.15);
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn:hover{ transform: translateY(-1px); }
+.btn:active{ transform: translateY(0); }
+.btn[disabled]{ opacity:.55; cursor:not-allowed; }
+
+.btn.secondary{
+  background: #fff; color: var(--csu-green);
+  border-color: var(--csu-green-2);
+  box-shadow:none;
+}
+.btn.secondary:hover{ background: var(--csu-cream); }
+
+.chips{display:flex; gap:8px; flex-wrap:wrap}
+.chip{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink-2);
+  border-radius:999px; padding:8px 12px; cursor:pointer;
+  transition: background var(--transition), color var(--transition), border var(--transition), transform var(--transition);
+}
+.chip[aria-pressed="true"]{
+  background: var(--csu-cream);
+  border-color: var(--csu-gold);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+/* Focus styles */
+
+:where(a,button,input,select,textarea):focus{
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+:where(a,button).btn:focus{ box-shadow: var(--focus-ring-strong); }
+
+/* -------- Search & Controls -------- */
+
+.searchbar{
+  display:flex; gap:10px; align-items:center;
+  background: var(--card);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px;
+  box-shadow: var(--shadow);
+}
+.searchbar input[type="search"]{
+  flex:1; border:0; outline:0; background:transparent; padding:10px 12px;
+  font-size:16px; color:var(--ink-2);
+}
+.searchbar button{
+  white-space:nowrap;
+}
+.controls{
+  display:flex; gap:12px; align-items:center; justify-content:space-between; margin: 12px 2px 0;
+  flex-wrap:wrap;
+}
+.toggle{display:inline-flex; align-items:center; gap:8px; user-select:none}
+
+/* -------- Meta & helpers -------- */
+
+.meta{ margin: 12px 2px; color:var(--muted); font-size:14px; display:flex; gap:8px; align-items:center; }
+.kbd{ background:#f0f2f5; border:1px solid #e2e5ea; border-radius:6px; padding:1px 6px; }
+
+/* -------- Cards / Results -------- */
+
+.results{ display:grid; gap:14px; margin-top:12px; }
+@media (min-width: 720px){
+  .results{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px){
+  .results{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.card{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+
+.name{
+  font-weight: 800;
+  font-size: 18px;
+  margin: 2px 0 8px;
+  color: var(--ink-2);
+}
+
+.row{ display:flex; align-items:center; gap:8px; color:var(--ink-2); }
+.row + .row{ margin-top:6px; }
+
+.dot{
+  width:8px; height:8px; border-radius:999px; background: var(--csu-green-2);
+  display:inline-block;
+}
+
+.actions{
+  display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;
+}
+
+/* Status labels */
+
+.open{ color:#066e2f; font-weight:700; }
+.closed{ color:#9b1c1c; font-weight:700; }
+
+/* -------- Tables -------- */
+
+.table{
+  width:100%; border-collapse: collapse; font-size:14px;
+  border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
+}
+.table thead th{
+  text-align:left; font-weight:700; color:var(--ink); background: #F3F6F2;
+  border-bottom:1px solid var(--line); padding:10px 12px;
+}
+.table td{
+  border-bottom:1px solid var(--line); padding:10px 12px; vertical-align:top;
+}
+.table tr:last-child td{ border-bottom:0; }
+
+/* -------- Forms -------- */
+
+label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+input[type="text"], input[type="email"], input[type="search"], input[type="time"], textarea, select{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding:10px 12px;
+  background:#fff;
+  color:var(--ink-2);
+  transition: border var(--transition), box-shadow var(--transition), background var(--transition);
+}
+input::placeholder, textarea::placeholder{ color:#9aa0a6 }
+input:focus, textarea:focus, select:focus{
+  border-color: var(--csu-green-2);
+  box-shadow: var(--focus-ring);
+  background:#fff;
+}
+textarea{ resize: vertical; }
+
+/* Hours grid cards inside admin form */
+#hoursGrid .card{
+  padding:10px;
+  border-radius: 10px;
+}
+
+/* -------- Empty state -------- */
+
+.empty{
+  margin: 18px 2px;
+  color: var(--muted);
+  padding: 20px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: #fafafa;
+}
+
+/* -------- Footer -------- */
+
+footer{
+  margin-top: 18px; color: var(--muted); font-size:14px;
+}
+
+/* -------- Badges / Pills -------- */
+
+.badge.small{
+  padding:4px 8px; font-size:12px;
+}
+
+/* -------- Admin status badge colors -------- */
+
+.badge[style*="Backend: online"],
+#apiStatus.is-online{
+  color:#0f9d58; border-color:#0f9d58;
+}
+#apiStatus.is-offline{
+  color:#e11d48; border-color:#fecaca;
+}
+
+/* -------- Links -------- */
+
+a{ color: var(--csu-green-2); }
+a:hover{ text-decoration: underline; }
+
+/* -------- Marks (search highlights) -------- */
+
+mark{
+  background: #fff4b8;
+  color: inherit;
+  padding: 0 .15em;
+  border-radius: 4px;
+}
+
+/* -------- Utility spacing tweaks for pages -------- */
+
+header .btn{ width:auto; }
+.breadcrumb code{ background:#f0f2f5; padding:2px 6px; border-radius:6px; border:1px solid #e6e8eb; }
+
+/* -------- Accessibility: high-contrast focus on keyboard nav -------- */
+
+@media (hover:none){
+  .btn:hover{ transform:none; }
+}
+
+/* -------- Print tweaks (for rubric screenshots etc.) -------- */
+
+@media print{
+  header, .controls, .searchbar, .actions, .chips { display:none !important; }
+  .card, .table{ box-shadow:none; border-color:#ccc; }
+}
