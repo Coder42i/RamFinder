@@ -12,10 +12,11 @@
       <div class="logo" aria-hidden="true">RF</div>
       <div>
         <h1>RamFinder – Campus Resources</h1>
-        <div class="subtitle">Search resources, see what’s open now, and get directions.</div>
+        <div class="subtitle">Search resources, see what’s open now, get directions, and save favorites.</div>
         <nav class="breadcrumb"><a href="index.html">Home</a></nav>
       </div>
       <div id="userbox" class="badge"></div>
+      <a id="favLink" class="btn" href="favorites.html" style="width:auto; display:none">Favorites</a>
       <a id="loginLink" class="btn" href="login.html" style="width:auto">Log in</a>
       <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
       <a id="adminLink" class="btn" href="admin.html" style="width:auto; display:none">Admin</a>
@@ -35,6 +36,8 @@
           <button class="chip" data-chip="study" aria-pressed="false">Study Room</button>
           <button class="chip" data-chip="lab" aria-pressed="false">Lab</button>
           <button class="chip" data-chip="restroom" aria-pressed="false">Restroom</button>
+          <button class="chip" data-chip="medical" aria-pressed="false">Medical</button>
+          <button class="chip" data-chip="hospital" aria-pressed="false">Hospital</button>
         </div>
       </div>
     </section>
@@ -49,13 +52,14 @@
     <div id="empty" class="empty" hidden>No resources match your search.</div>
 
     <footer>
-      <div>Tip: Click a result to see details or open directions.</div>
+      <div>Tip: Click a result to see details or open directions. Sign in to save favorites.</div>
     </footer>
   </div>
 
   <!-- Load libs FIRST, then page scripts -->
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
+  <script src="assets/favs.js"></script>
 
   <!-- Header session controller -->
   <script>
@@ -65,11 +69,13 @@
       const loginLink = document.getElementById('loginLink');
       const logoutBtn = document.getElementById('logoutBtn');
       const adminLink = document.getElementById('adminLink');
+      const favLink   = document.getElementById('favLink');
 
       if (sess) {
         userbox.textContent = (sess.admin ? 'Admin • ' : '') + (sess.email || '');
         loginLink.style.display = 'none';
         logoutBtn.style.display  = 'inline-block';
+        favLink.style.display    = 'inline-block';
         logoutBtn.addEventListener('click', () => {
           AUTH.logout();
           window.location.href = 'index.html';
@@ -80,12 +86,13 @@
         userbox.textContent = 'Guest';
         loginLink.style.display = 'inline-block';
         logoutBtn.style.display  = 'none';
+        favLink.style.display    = 'none';
         if (adminLink) adminLink.style.display = 'none';
       }
     })();
   </script>
 
-  <!-- Search logic -->
+  <!-- Search + Favorites logic -->
   <script>
     const DATA_URL = 'data/resources.json';
     const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -122,30 +129,60 @@
         return chipOk&&openOk&&(nq===''||hay.includes(nq));
       });
     }
+
+    function favButtonHTML(signedIn, isFav, id){
+      const label = isFav ? '★ Favorited' : '☆ Favorite';
+      const pressed = isFav ? 'true' : 'false';
+      const disabled = signedIn ? '' : 'disabled title="Log in to use favorites"';
+      return `<button class="btn" data-action="fav" data-id="${id}" aria-pressed="${pressed}" ${disabled}>${label}</button>`;
+    }
+
     function render(list,query){
+      const sess = AUTH.current();
       results.innerHTML='';
       if(!list.length){count.textContent='0 results';results.hidden=true;empty.hidden=false;return;}
       results.hidden=false;empty.hidden=true;count.textContent=`${list.length} result${list.length>1?'s':''}`;
       const frag=document.createDocumentFragment();
       for(const r of list){
-        const open=isOpenNow(r); const el=document.createElement('article'); el.className='card';
+        const open=isOpenNow(r);
+        const isFav = !!(sess && FAVS.has(sess.email, r.id));
+        const el=document.createElement('article'); el.className='card';
         el.innerHTML=`
           <div class="badge">${escapeHtml(r.type[0].toUpperCase()+r.type.slice(1))}</div>
           <div class="name"><a href="resource.html?id=${encodeURIComponent(r.id)}" style="color:inherit;text-decoration:none">${highlight(r.name,query)}</a></div>
           <div class="row"><span class="dot"></span><span>${highlight(r.building+(r.room?', '+r.room:''),query)}</span></div>
           <div class="row"><strong class="${open?'open':'closed'}">${open?'Open Now':'Closed'}</strong></div>
-          <div class="actions"><a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
-          <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a></div>`;
+          <div class="actions">
+            <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
+            <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a>
+            ${favButtonHTML(!!sess, isFav, r.id)}
+          </div>`;
         frag.appendChild(el);
       }
       results.appendChild(frag);
     }
+
     function debounce(fn,ms=120){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
     const doSearch=debounce(()=>{render(filterData(q.value.trim()),q.value.trim());});
+
     q.addEventListener('input',doSearch);
     clearBtn.addEventListener('click',()=>{q.value='';q.focus();doSearch();});
     window.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}if(e.key==='Escape'){q.value='';doSearch();q.blur();}});
     chips.forEach(btn=>btn.addEventListener('click',()=>{const val=btn.dataset.chip;const pressed=btn.getAttribute('aria-pressed')==='true';chips.forEach(c=>c.setAttribute('aria-pressed','false'));if(!pressed){btn.setAttribute('aria-pressed','true');activeChip=val;}else{activeChip=null;}doSearch();}));
+
+    // Favorite handler (event delegation)
+    results.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action="fav"]');
+      if (!btn) return;
+      const sess = AUTH.current();
+      if (!sess) { window.location.href = 'login.html'; return; }
+      const id = btn.getAttribute('data-id');
+      const nowFav = FAVS.toggle(sess.email, id);
+      const isFav = nowFav.includes(String(id));
+      btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+      btn.textContent = isFav ? '★ Favorited' : '☆ Favorite';
+    });
+
     async function init(){const res=await fetch(DATA_URL,{cache:'no-store'});DATA=await res.json();render(DATA,'');}
     init();
   </script>

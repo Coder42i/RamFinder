@@ -3,29 +3,65 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Resource Details • RamFinder</title>
+  <title>RamFinder • Search</title>
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
   <div class="container">
     <header>
       <div class="logo" aria-hidden="true">RF</div>
-      <div style="flex:1">
-        <h1 id="title">Resource</h1>
-        <div class="subtitle">Details and directions.</div>
-        <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Details</span></nav>
+      <div>
+        <h1>RamFinder – Campus Resources</h1>
+        <div class="subtitle">Search resources, see what’s open now, get directions, and save favorites.</div>
+        <nav class="breadcrumb"><a href="index.html">Home</a></nav>
       </div>
       <div id="userbox" class="badge"></div>
+      <a id="favLink" class="btn" href="favorites.html" style="width:auto; display:none">Favorites</a>
       <a id="loginLink" class="btn" href="login.html" style="width:auto">Log in</a>
       <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
       <a id="adminLink" class="btn" href="admin.html" style="width:auto; display:none">Admin</a>
     </header>
 
-    <section class="card" id="details"></section>
+    <section aria-label="Search tools">
+      <div class="searchbar" role="search">
+        <input id="q" type="search" placeholder="Search by name, type, or building (e.g., printer, vending, Morgan)" aria-label="Search resources" autofocus />
+        <button id="clearBtn" aria-label="Clear search">Clear</button>
+      </div>
+
+      <div class="controls">
+        <label class="toggle"><input id="openNow" type="checkbox" /> Open Now</label>
+        <div class="chips" aria-label="Quick filters">
+          <button class="chip" data-chip="printer" aria-pressed="false">Printer</button>
+          <button class="chip" data-chip="vending" aria-pressed="false">Vending</button>
+          <button class="chip" data-chip="study" aria-pressed="false">Study Room</button>
+          <button class="chip" data-chip="lab" aria-pressed="false">Lab</button>
+          <button class="chip" data-chip="restroom" aria-pressed="false">Restroom</button>
+          <button class="chip" data-chip="medical" aria-pressed="false">Medical</button>
+          <button class="chip" data-chip="hospital" aria-pressed="false">Hospital</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="meta" aria-live="polite" aria-atomic="true">
+      <span id="count">0 results</span>
+      <span>•</span>
+      <span>Type <code class="kbd">/</code> to focus, <code class="kbd">Esc</code> to clear</span>
+    </div>
+
+    <section class="results" id="results" aria-label="Search results"></section>
+    <div id="empty" class="empty" hidden>No resources match your search.</div>
+
+    <footer>
+      <div>Tip: Click a result to see details or open directions. Sign in to save favorites.</div>
+    </footer>
   </div>
 
+  <!-- Load libs FIRST, then page scripts -->
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
+  <script src="assets/favs.js"></script>
+
+  <!-- Header session controller -->
   <script>
     (async function initHeader(){
       const sess = AUTH.current();
@@ -33,63 +69,122 @@
       const loginLink = document.getElementById('loginLink');
       const logoutBtn = document.getElementById('logoutBtn');
       const adminLink = document.getElementById('adminLink');
+      const favLink   = document.getElementById('favLink');
+
       if (sess) {
         userbox.textContent = (sess.admin ? 'Admin • ' : '') + (sess.email || '');
         loginLink.style.display = 'none';
         logoutBtn.style.display  = 'inline-block';
-        logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
-        if (sess.admin && adminLink) adminLink.style.display = 'inline-block'; else if (adminLink) adminLink.style.display = 'none';
+        favLink.style.display    = 'inline-block';
+        logoutBtn.addEventListener('click', () => {
+          AUTH.logout();
+          window.location.href = 'index.html';
+        });
+        if (sess.admin && adminLink) adminLink.style.display = 'inline-block';
+        else if (adminLink) adminLink.style.display = 'none';
       } else {
         userbox.textContent = 'Guest';
         loginLink.style.display = 'inline-block';
         logoutBtn.style.display  = 'none';
+        favLink.style.display    = 'none';
         if (adminLink) adminLink.style.display = 'none';
       }
     })();
   </script>
+
+  <!-- Search + Favorites logic -->
   <script>
+    const DATA_URL = 'data/resources.json';
     const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    function escapeHtml(str){return (str+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function escapeRegExp(str){return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');}
+    function highlight(text, query){
+      const t = text ?? ''; const qn = norm(query).trim();
+      if(!qn) return escapeHtml(t);
+      const re = new RegExp('(' + escapeRegExp(qn) + ')', 'ig');
+      return escapeHtml(t).replace(re, '<mark>$1</mark>');
+    }
     function isOpenNow(item, now=new Date()){
-      const slot = item.hours[DOW[now.getDay()]];
+      const dow = DOW[now.getDay()]; const slot = item.hours[dow];
       if(!slot || slot.closed) return false;
       const [oh, om] = (slot.open||'00:00').split(':').map(Number);
       const [ch, cm] = (slot.close||'00:00').split(':').map(Number);
       const openM = oh*60+om, closeM = ch*60+cm, curM = now.getHours()*60+now.getMinutes();
       return curM>=openM && curM<=closeM;
     }
-    function esc(s){return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-    function qs(name){const u=new URL(location.href);return u.searchParams.get(name)}
-    async function load(){
-      const id = qs('id');
-      const res = await fetch('data/resources.json', {cache:'no-store'});
-      const list = await res.json();
-      const item = list.find(r => r.id === id);
-      const box = document.getElementById('details');
-      const title = document.getElementById('title');
-      if(!item){ box.innerHTML = '<div class="empty">Resource not found.</div>'; return; }
-      title.textContent = item.name;
-      const open = isOpenNow(item);
-      const hours = Object.entries(item.hours||{}).map(([d,v])=>{
-        if (v && v.closed) return `<tr><td>${d}</td><td>Closed</td></tr>`;
-        if (!v) return `<tr><td>${d}</td><td>—</td></tr>`;
-        return `<tr><td>${d}</td><td>${esc(v.open)} — ${esc(v.close)}</td></tr>`;
-      }).join('');
-      const gmap = `https://www.google.com/maps/search/${encodeURIComponent((item.name||'')+' '+(item.building||'')+' Colorado State University')}`;
-      box.innerHTML = `
-        <div class="badge">${esc(item.type[0].toUpperCase()+item.type.slice(1))}</div>
-        <h2 style="margin:0">${esc(item.name)}</h2>
-        <div class="row"><span class="dot"></span><span>${esc(item.building)}${item.room?', '+esc(item.room):''}</span></div>
-        <div class="row"><strong class="${open?'open':'closed'}">${open?'Open Now':'Closed'}</strong></div>
-        <div class="row">${esc(item.notes||'')}</div>
-        <div class="actions">
-          <a class="btn" href="${gmap}" target="_blank">Directions</a>
-          <a class="btn" href="index.html">Back to Search</a>
-        </div>
-        <div style="height:12px"></div>
-        <table class="table"><thead><tr><th>Day</th><th>Hours</th></tr></thead><tbody>${hours}</tbody></table>
-      `;
+
+    let DATA=[]; let activeChip=null;
+    const q=document.getElementById('q'), results=document.getElementById('results'), count=document.getElementById('count'),
+          empty=document.getElementById('empty'), clearBtn=document.getElementById('clearBtn'), openNow=document.getElementById('openNow'),
+          chips=Array.from(document.querySelectorAll('.chip'));
+
+    function filterData(query){
+      const nq=norm(query);
+      return DATA.filter(item=>{
+        const hay=[item.name,item.type,item.building,item.room,item.notes].map(norm).join(' ');
+        const chipOk=activeChip?norm(item.type)===activeChip:true;
+        const openOk=openNow.checked?isOpenNow(item):true;
+        return chipOk&&openOk&&(nq===''||hay.includes(nq));
+      });
     }
-    load();
+
+    function favButtonHTML(signedIn, isFav, id){
+      const label = isFav ? '★ Favorited' : '☆ Favorite';
+      const pressed = isFav ? 'true' : 'false';
+      const disabled = signedIn ? '' : 'disabled title="Log in to use favorites"';
+      return `<button class="btn" data-action="fav" data-id="${id}" aria-pressed="${pressed}" ${disabled}>${label}</button>`;
+    }
+
+    function render(list,query){
+      const sess = AUTH.current();
+      results.innerHTML='';
+      if(!list.length){count.textContent='0 results';results.hidden=true;empty.hidden=false;return;}
+      results.hidden=false;empty.hidden=true;count.textContent=`${list.length} result${list.length>1?'s':''}`;
+      const frag=document.createDocumentFragment();
+      for(const r of list){
+        const open=isOpenNow(r);
+        const isFav = !!(sess && FAVS.has(sess.email, r.id));
+        const el=document.createElement('article'); el.className='card';
+        el.innerHTML=`
+          <div class="badge">${escapeHtml(r.type[0].toUpperCase()+r.type.slice(1))}</div>
+          <div class="name"><a href="resource.html?id=${encodeURIComponent(r.id)}" style="color:inherit;text-decoration:none">${highlight(r.name,query)}</a></div>
+          <div class="row"><span class="dot"></span><span>${highlight(r.building+(r.room?', '+r.room:''),query)}</span></div>
+          <div class="row"><strong class="${open?'open':'closed'}">${open?'Open Now':'Closed'}</strong></div>
+          <div class="actions">
+            <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
+            <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a>
+            ${favButtonHTML(!!sess, isFav, r.id)}
+          </div>`;
+        frag.appendChild(el);
+      }
+      results.appendChild(frag);
+    }
+
+    function debounce(fn,ms=120){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+    const doSearch=debounce(()=>{render(filterData(q.value.trim()),q.value.trim());});
+
+    q.addEventListener('input',doSearch);
+    clearBtn.addEventListener('click',()=>{q.value='';q.focus();doSearch();});
+    window.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}if(e.key==='Escape'){q.value='';doSearch();q.blur();}});
+    chips.forEach(btn=>btn.addEventListener('click',()=>{const val=btn.dataset.chip;const pressed=btn.getAttribute('aria-pressed')==='true';chips.forEach(c=>c.setAttribute('aria-pressed','false'));if(!pressed){btn.setAttribute('aria-pressed','true');activeChip=val;}else{activeChip=null;}doSearch();}));
+
+    // Favorite handler (event delegation)
+    results.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action="fav"]');
+      if (!btn) return;
+      const sess = AUTH.current();
+      if (!sess) { window.location.href = 'login.html'; return; }
+      const id = btn.getAttribute('data-id');
+      const nowFav = FAVS.toggle(sess.email, id);
+      const isFav = nowFav.includes(String(id));
+      btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+      btn.textContent = isFav ? '★ Favorited' : '☆ Favorite';
+    });
+
+    async function init(){const res=await fetch(DATA_URL,{cache:'no-store'});DATA=await res.json();render(DATA,'');}
+    init();
   </script>
 </body>
 </html>

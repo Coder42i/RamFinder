@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Favorites • RamFinder</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo" aria-hidden="true">RF</div>
+      <div>
+        <h1>My Favorites</h1>
+        <div class="subtitle">Quick access to your saved resources.</div>
+        <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Favorites</span></nav>
+      </div>
+      <div id="userbox" class="badge"></div>
+      <a id="favLink" class="btn" href="favorites.html" style="width:auto;">Favorites</a>
+      <a id="loginLink" class="btn" href="login.html" style="width:auto; display:none">Log in</a>
+      <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
+      <a id="adminLink" class="btn" href="admin.html" style="width:auto; display:none">Admin</a>
+    </header>
+
+    <section class="results" id="favList" aria-label="Favorites"></section>
+    <div id="empty" class="empty" hidden>No favorites yet. Go to the <a href="index.html">search</a> page and tap ☆ Favorite.</div>
+  </div>
+
+  <script src="assets/store.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/favs.js"></script>
+
+  <script>
+    (async function initHeader(){
+      const sess = AUTH.current();
+      const userbox   = document.getElementById('userbox');
+      const loginLink = document.getElementById('loginLink');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const adminLink = document.getElementById('adminLink');
+      const favLink   = document.getElementById('favLink');
+
+      if (sess) {
+        userbox.textContent = (sess.admin ? 'Admin • ' : '') + (sess.email || '');
+        loginLink.style.display = 'none';
+        logoutBtn.style.display  = 'inline-block';
+        favLink.style.display    = 'inline-block';
+        logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
+        if (sess.admin && adminLink) adminLink.style.display = 'inline-block'; else if (adminLink) adminLink.style.display = 'none';
+      } else {
+        // Redirect guests to login (favorites are tied to user)
+        window.location.href = 'login.html';
+      }
+    })();
+  </script>
+
+  <script>
+    const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function isOpenNow(item, now=new Date()){
+      const slot = item.hours?.[DOW[now.getDay()]];
+      if(!slot || slot.closed) return false;
+      const [oh, om] = (slot.open||'00:00').split(':').map(Number);
+      const [ch, cm] = (slot.close||'00:00').split(':').map(Number);
+      const openM = oh*60+om, closeM = ch*60+cm, curM = now.getHours()*60+now.getMinutes();
+      return curM>=openM && curM<=closeM;
+    }
+    function escapeHtml(str){return (str+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+    async function renderFavs(){
+      const sess = AUTH.current();
+      if (!sess) return;
+      const list = await FAVS.detailed(sess.email);
+      const wrap = document.getElementById('favList');
+      const empty = document.getElementById('empty');
+      wrap.innerHTML = '';
+      if (!list.length){ empty.hidden = false; wrap.hidden=true; return; }
+      empty.hidden = true; wrap.hidden=false;
+
+      for (const r of list){
+        const open = isOpenNow(r);
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="badge">${escapeHtml(r.type[0].toUpperCase()+r.type.slice(1))}</div>
+          <div class="name"><a href="resource.html?id=${encodeURIComponent(r.id)}" style="color:inherit;text-decoration:none">${escapeHtml(r.name)}</a></div>
+          <div class="row"><span class="dot"></span><span>${escapeHtml(r.building+(r.room?', '+r.room:''))}</span></div>
+          <div class="row"><strong class="${open?'open':'closed'}">${open?'Open Now':'Closed'}</strong></div>
+          <div class="actions">
+            <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
+            <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a>
+            <button class="btn" data-action="unfav" data-id="${r.id}">Remove</button>
+          </div>
+        `;
+        wrap.appendChild(card);
+      }
+
+      wrap.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action="unfav"]');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        FAVS.remove(sess.email, id);
+        renderFavs(); // re-render
+      });
+    }
+
+    renderFavs();
+  </script>
+</body>
+</html>
