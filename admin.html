@@ -27,11 +27,11 @@
       <span id="apiStatus" class="badge" style="margin-left:auto">Checking backend…</span>
     </div>
 
-    <!-- ============ Admins Panel ============ -->
+    <!-- ===== Admins Panel ===== -->
     <section id="panelAdmins" class="card" aria-label="Admin management">
       <div class="subtitle" style="margin-bottom:10px">
-        Base admins come from <code>data/admins.json</code>. Overrides (if any) live in your browser and are for demos.
-        <br/>Run <code>python app.py</code> to permanently edit <code>data/admins.json</code>.
+        Base admins live in <code>data/admins.json</code>. Overrides are browser-only (for demos).
+        Run <code>python app.py</code> to edit <code>data/admins.json</code> from the UI.
       </div>
 
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px">
@@ -47,7 +47,7 @@
       </table>
     </section>
 
-    <!-- ============ Resources Panel ============ -->
+    <!-- ===== Resources Panel ===== -->
     <section id="panelResources" class="card" style="display:none" aria-label="Resources management">
       <div class="subtitle" style="margin-bottom:10px">
         Create, edit, or delete campus resources. Writes require the backend (<code>python app.py</code>) and an admin session.
@@ -59,6 +59,8 @@
                style="flex:1; background:#0f182b; border:1px solid #26324d; border-radius:8px; color:#e7edf7; padding:10px">
       </div>
 
+      <div id="resAlert" class="subtitle" style="color:#fca5a5; display:none;"></div>
+
       <table class="table">
         <thead><tr>
           <th>ID</th><th>Name</th><th>Type</th><th>Building</th><th>Room</th><th>Open now?</th><th style="width:200px">Actions</th>
@@ -66,9 +68,12 @@
         <tbody id="resRows"></tbody>
       </table>
 
-      <!-- Simple inline form (Add/Edit) -->
+      <!-- Inline form -->
       <div id="resFormWrap" class="card" style="margin-top:16px; display:none">
         <h3 id="resFormTitle">New Resource</h3>
+
+        <div id="resFormAlert" class="subtitle" style="color:#fca5a5; display:none;"></div>
+
         <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px">
           <div><label>Name</label><input id="f_name" type="text" /></div>
           <div><label>Type</label><input id="f_type" type="text" placeholder="printer, vending, study, lab, restroom"/></div>
@@ -94,40 +99,11 @@
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
 
-<script>
-  (function waitForAUTH(run){
-    if (window.AUTH) run();
-    else setTimeout(() => waitForAUTH(run), 25);
-  })(async function initHeader(){
-    const sess = AUTH.current();
-    const userbox   = document.getElementById('userbox');
-    const loginLink = document.getElementById('loginLink');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    if (sess) {
-      userbox.textContent = (sess.admin ? 'Admin • ' : '') + (sess.email || '');
-      loginLink.style.display = 'none';
-      logoutBtn.style.display  = 'inline-block';
-      logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
-    } else {
-      userbox.textContent = 'Guest';
-      loginLink.style.display = 'inline-block';
-      logoutBtn.style.display  = 'none';
-    }
-  });
-</script>
-
   <script>
+    // ===== Helpers =====
     const API = "http://127.0.0.1:5050";
-
-    async function isApiLive() {
-      try {
-        const r = await fetch(`${API}/api/health`, { cache: 'no-store' });
-        const j = await r.json();
-        return !!j.ok;
-      } catch { return false; }
-    }
     const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
     function isOpenNow(item, now=new Date()){
       const slot = item?.hours?.[DOW[now.getDay()]];
       if(!slot || slot.closed) return false;
@@ -136,18 +112,24 @@
       const openM = oh*60+om, closeM = ch*60+cm, curM = now.getHours()*60+now.getMinutes();
       return curM >= openM && curM <= closeM;
     }
-    function norm(s){return (s||'').toString().toLowerCase();}
+    function norm(s){return (s||'').toString().toLowerCase().trim();}
+    function show(el, on){ el.style.display = on ? '' : 'none'; }
+    function setBadge(badge, ok){
+      badge.textContent = ok ? 'Backend: online' : 'Backend: offline';
+      badge.style.borderColor = ok ? '#34d399' : '#fca5a5';
+      badge.style.color = ok ? '#34d399' : '#fca5a5';
+    }
+    async function apiHealth(){
+      try { const r = await fetch(`${API}/api/health`, {cache:'no-store'}); const j = await r.json(); return !!j.ok; }
+      catch { return false; }
+    }
 
-    (function waitForAUTH(run){
-      if (window.AUTH) run();
-      else setTimeout(() => waitForAUTH(run), 25);
-    })(async function initAdmin(){
-      // Gate: only admins
-      const sess = AUTH.current();
-      if (!sess || !(await AUTH.isAdmin(sess.email))) {
-        window.location.href = 'index.html';
-        return;
-      }
+    // ===== Main =====
+    (function waitForAUTH(run){ if (window.AUTH) run(); else setTimeout(()=>waitForAUTH(run), 25); })(async function(){
+      // Refresh admin flag in stored session, then gate
+      let sess = AUTH.current();
+      if (sess) sess = await AUTH.refreshSessionAdmin();
+      if (!sess || !sess.admin) { window.location.href = 'index.html'; return; }
 
       // Header
       const userbox   = document.getElementById('userbox');
@@ -173,17 +155,12 @@
       tabAdmins.addEventListener('click', ()=> selectTab('admins'));
       tabResources.addEventListener('click', ()=> selectTab('resources'));
 
-      // API badge
+      // Backend badge
       const apiBadge = document.getElementById('apiStatus');
-      let apiUp = await isApiLive();
-      function setApiBadge(){
-        apiBadge.textContent = apiUp ? 'Backend: online' : 'Backend: offline';
-        apiBadge.style.borderColor = apiUp ? '#34d399' : '#fca5a5';
-        apiBadge.style.color = apiUp ? '#34d399' : '#fca5a5';
-      }
-      setApiBadge();
+      let apiUp = await apiHealth();
+      setBadge(apiBadge, apiUp);
 
-      // ------------------- Admins panel -------------------
+      // ---------- Admins panel ----------
       const adminEmail = document.getElementById('adminEmail');
       const addAdminBtn = document.getElementById('addAdminBtn');
       const exportAdminsBtn = document.getElementById('exportAdminsBtn');
@@ -192,10 +169,10 @@
       async function renderAdmins(){
         adminRows.innerHTML = '';
         let baseList = [];
-        try {
-          const r = await fetch('data/admins.json', {cache:'no-store'}); baseList = await r.json();
-        } catch { baseList = []; }
+        try { const r = await fetch('data/admins.json', {cache:'no-store'}); baseList = await r.json(); }
+        catch { baseList = []; }
         const baseSet = new Set((Array.isArray(baseList)?baseList:[]).map(e => (e||'').toLowerCase()));
+
         const merged = await AUTH.getAdminsMerged();
         merged.sort((a,b)=>a.localeCompare(b, undefined, {sensitivity:'base'}));
         for(const email of merged){
@@ -222,6 +199,8 @@
         try {
           await AUTH.addAdmin(email);
           adminEmail.value = '';
+          await AUTH.refreshSessionAdmin();
+          apiUp = await apiHealth(); setBadge(apiBadge, apiUp);
           await renderAdmins();
         } catch(e){ alert(e?.message || 'Add failed.'); }
       });
@@ -232,29 +211,33 @@
         if(!btn) return;
         const email = btn.getAttribute('data-email');
         const isBase = btn.getAttribute('data-base') === '1';
-        apiUp = await isApiLive(); setApiBadge();
+        apiUp = await apiHealth(); setBadge(apiBadge, apiUp);
         if(isBase && !apiUp){ alert('Start backend (python app.py) to remove base admins.'); return; }
         if(!confirm(`Remove admin: ${email}?`)) return;
-        try { await AUTH.removeAdmin(email); await renderAdmins(); }
+        try { await AUTH.removeAdmin(email); await AUTH.refreshSessionAdmin(); await renderAdmins(); }
         catch(err){ alert('Remove failed.'); }
       });
 
-      // ------------------- Resources panel -------------------
-      const addResBtn  = document.getElementById('addResBtn');
-      const resSearch  = document.getElementById('resSearch');
-      const resRows    = document.getElementById('resRows');
-      const resFormWrap= document.getElementById('resFormWrap');
-      const resFormTitle=document.getElementById('resFormTitle');
+      // ---------- Resources panel ----------
+      const addResBtn   = document.getElementById('addResBtn');
+      const resSearch   = document.getElementById('resSearch');
+      const resAlert    = document.getElementById('resAlert');
+      const resRows     = document.getElementById('resRows');
+      const resFormWrap = document.getElementById('resFormWrap');
+      const resFormTitle= document.getElementById('resFormTitle');
+      const resFormAlert= document.getElementById('resFormAlert');
+
       const f_name=document.getElementById('f_name');
       const f_type=document.getElementById('f_type');
       const f_building=document.getElementById('f_building');
       const f_room=document.getElementById('f_room');
       const f_notes=document.getElementById('f_notes');
       const hoursGrid=document.getElementById('hoursGrid');
+
       const saveResBtn=document.getElementById('saveResBtn');
       const cancelResBtn=document.getElementById('cancelResBtn');
 
-      let RES_ALL = [];   // full list from server/file
+      let RES_ALL = [];
       let EDITING_ID = null;
 
       function hoursRow(day, value){
@@ -273,7 +256,16 @@
             </div>
           </div>`;
       }
-
+      function populateHoursGrid(hours){
+        hoursGrid.innerHTML = DOW.map(d => hoursRow(d, hours?.[d])).join('');
+        hoursGrid.querySelectorAll('.h_closed').forEach(chk=>{
+          chk.addEventListener('change', (e)=>{
+            const card = e.target.closest('[data-day]');
+            card.querySelector('.h_open').disabled = e.target.checked;
+            card.querySelector('.h_close').disabled = e.target.checked;
+          });
+        });
+      }
       function buildHoursFromGrid(){
         const out = {};
         for(const day of DOW){
@@ -285,21 +277,10 @@
         }
         return out;
       }
-
-      function populateHoursGrid(hours){
-        hoursGrid.innerHTML = DOW.map(d => hoursRow(d, hours?.[d])).join('');
-        // enable/disable by closed checkbox
-        hoursGrid.querySelectorAll('.h_closed').forEach(chk=>{
-          chk.addEventListener('change', (e)=>{
-            const card = e.target.closest('[data-day]');
-            card.querySelector('.h_open').disabled = e.target.checked;
-            card.querySelector('.h_close').disabled = e.target.checked;
-          });
-        });
-      }
-
       function openForm(rec){
-        resFormWrap.style.display = '';
+        console.log('[RF] openForm', rec);
+        resFormAlert.textContent = ''; show(resFormAlert, false);
+        show(resFormWrap, true);
         if(rec){
           EDITING_ID = rec.id;
           resFormTitle.textContent = `Edit Resource #${rec.id}`;
@@ -315,36 +296,33 @@
           f_name.value = ''; f_type.value=''; f_building.value=''; f_room.value=''; f_notes.value='';
           populateHoursGrid({});
         }
+        // scroll to form to make it obvious
+        resFormWrap.scrollIntoView({behavior:'smooth', block:'start'});
       }
-
-      function closeForm(){
-        resFormWrap.style.display = 'none';
-        EDITING_ID = null;
-      }
+      function closeForm(){ show(resFormWrap, false); EDITING_ID=null; }
 
       function filterList(q){
         const nq = norm(q);
         if(!nq) return RES_ALL;
-        return RES_ALL.filter(r => {
-          const hay = [r.name, r.type, r.building, r.room, r.notes].map(norm).join(' ');
-          return hay.includes(nq);
-        });
+        return RES_ALL.filter(r => [r.name,r.type,r.building,r.room,r.notes].map(norm).join(' ').includes(nq));
       }
 
       async function loadResources(){
-        // Try API; fall back to file (read-only)
         try{
           const r = await fetch(`${API}/api/resources`, {cache:'no-store'});
-          if(!r.ok) throw new Error();
+          if(!r.ok) throw 0;
           RES_ALL = await r.json();
-          apiUp = await isApiLive(); setApiBadge();
+          apiUp = await apiHealth(); setBadge(apiBadge, apiUp);
+          show(resAlert, false);
         }catch{
+          // fallback: read-only from file
           const rf = await fetch('data/resources.json', {cache:'no-store'});
           RES_ALL = await rf.json();
-          apiUp = false; setApiBadge();
+          apiUp = false; setBadge(apiBadge, apiUp);
+          resAlert.textContent = 'Backend offline: Add/Edit/Delete disabled (showing file data). Start with: python app.py';
+          show(resAlert, true);
         }
       }
-
       function renderResources(){
         resRows.innerHTML = '';
         const list = filterList(resSearch.value).slice().sort((a,b)=> a.name.localeCompare(b.name));
@@ -366,11 +344,12 @@
         }
       }
 
+      // Wire buttons (make sure these always run)
       addResBtn.addEventListener('click', ()=>{
+        console.log('[RF] Add clicked, apiUp=', apiUp);
         if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
         openForm(null);
       });
-
       resSearch.addEventListener('input', renderResources);
 
       resRows.addEventListener('click', async (e)=>{
@@ -378,40 +357,47 @@
         if(!btn) return;
         const id = btn.getAttribute('data-id');
         const action = btn.getAttribute('data-action');
-        if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
+        console.log('[RF] Row action:', action, 'id=', id);
 
         if(action === 'edit'){
+          if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
           const rec = RES_ALL.find(x => String(x.id) === String(id));
-          if(!rec) return;
+          if(!rec){ alert('Record not found'); return; }
           openForm(rec);
-        } else if(action === 'del'){
+          return;
+        }
+        if(action === 'del'){
+          if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
           if(!confirm(`Delete resource #${id}?`)) return;
           const r = await fetch(`${API}/api/resources/${encodeURIComponent(id)}`, {
             method: 'DELETE',
             headers: { 'Content-Type':'application/json', 'X-User-Email': sess.email }
           });
           if(!r.ok){ alert('Delete failed.'); return; }
-          await loadResources();
-          renderResources();
+          await loadResources(); renderResources();
+          return;
         }
       });
 
       saveResBtn.addEventListener('click', async ()=>{
+        console.log('[RF] Save clicked, editing=', EDITING_ID);
         if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
+        const name = f_name.value.trim();
+        const type = f_type.value.trim();
+        const building = f_building.value.trim();
+        if(!name || !type || !building){
+          resFormAlert.textContent = 'Name, Type, and Building are required.'; show(resFormAlert, true);
+          return;
+        }
         const payload = {
-          name: f_name.value.trim(),
-          type: f_type.value.trim(),
-          building: f_building.value.trim(),
+          name, type, building,
           room: f_room.value.trim(),
           notes: f_notes.value,
           hours: buildHoursFromGrid()
         };
         let url = `${API}/api/resources`;
         let method = 'POST';
-        if(EDITING_ID){
-          url = `${API}/api/resources/${encodeURIComponent(EDITING_ID)}`;
-          method = 'PUT';
-        }
+        if(EDITING_ID){ url = `${API}/api/resources/${encodeURIComponent(EDITING_ID)}`; method = 'PUT'; }
         const r = await fetch(url, {
           method,
           headers: { 'Content-Type':'application/json', 'X-User-Email': sess.email },
@@ -419,20 +405,21 @@
         });
         if(!r.ok){
           const msg = await r.json().catch(()=>({error:'Save failed'}));
-          alert(msg.error || 'Save failed.');
+          resFormAlert.textContent = msg.error || 'Save failed.'; show(resFormAlert, true);
           return;
         }
+        show(resFormAlert, false);
         closeForm();
-        await loadResources();
-        renderResources();
+        await loadResources(); renderResources();
       });
-
-      cancelResBtn.addEventListener('click', closeForm);
+      cancelResBtn.addEventListener('click', ()=>{ console.log('[RF] Cancel'); closeForm(); });
 
       // Initial loads
       await renderAdmins();
-      await loadResources();
-      renderResources();
+      await loadResources(); renderResources();
+
+      // Default to Resources tab if you want to demo immediately:
+      // selectTab('resources');
     });
   </script>
 </body>
