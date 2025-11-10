@@ -273,3 +273,31 @@ header .btn{ width:auto; }
   header, .controls, .searchbar, .actions, .chips { display:none !important; }
   .card, .table{ box-shadow:none; border-color:#ccc; }
 }
+
+/* Icon-only theme toggle button */
+.icon-btn {
+  font-size: 20px;
+  line-height: 1;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--csu-green-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:hover {
+  background: var(--csu-cream);
+  transform: none;
+}
+:root[data-theme="dark"] .icon-btn {
+  background: #0f1820;
+  color: #e7f0ea;
+  border-color: #3a5645;
+}
+:root[data-theme="dark"] .icon-btn:hover {
+  background: #13231a;
+}

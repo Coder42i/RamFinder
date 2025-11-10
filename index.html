@@ -16,6 +16,10 @@
         <nav class="breadcrumb"><a href="index.html">Home</a></nav>
       </div>
       <div id="userbox" class="badge"></div>
+
+      <!-- NEW: theme toggle button -->
+      <button id="themeToggle" class="btn secondary icon-btn" type="button" title="Switch to dark mode">🌙</button>
+
       <a id="favLink" class="btn" href="favorites.html" style="width:auto; display:none">Favorites</a>
       <a id="loginLink" class="btn" href="login.html" style="width:auto">Log in</a>
       <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
@@ -56,10 +60,9 @@
     </footer>
   </div>
 
-  <!-- Load libs FIRST, then page scripts -->
+  <!-- Page scripts -->
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
-<script src="assets/theme.js"></script>
   <script src="assets/favs.js"></script>
 
   <!-- Header session controller -->
@@ -171,7 +174,7 @@
     window.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}if(e.key==='Escape'){q.value='';doSearch();q.blur();}});
     chips.forEach(btn=>btn.addEventListener('click',()=>{const val=btn.dataset.chip;const pressed=btn.getAttribute('aria-pressed')==='true';chips.forEach(c=>c.setAttribute('aria-pressed','false'));if(!pressed){btn.setAttribute('aria-pressed','true');activeChip=val;}else{activeChip=null;}doSearch();}));
 
-    // Favorite handler (event delegation)
+    // Favorite handler
     results.addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-action="fav"]');
       if (!btn) return;
@@ -186,6 +189,36 @@
 
     async function init(){const res=await fetch(DATA_URL,{cache:'no-store'});DATA=await res.json();render(DATA,'');}
     init();
+  </script>
+
+  <!-- THEME INLINE (always light by default, button toggles dark) -->
+  <script>
+    (function(){
+      const KEY = 'rf:theme';
+      const ROOT = document.documentElement;
+      const btn  = document.getElementById('themeToggle');
+
+      function apply(theme){
+        const t = (theme === 'dark') ? 'dark' : 'light';
+        ROOT.setAttribute('data-theme', t);
+        localStorage.setItem(KEY, t);
+        if (btn){
+          const dark = t === 'dark';
+          btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+          btn.title = dark ? 'Switch to light mode' : 'Switch to dark mode';
+          btn.textContent = dark ? '☀️' : '🌙';
+        }
+      }
+
+      apply((localStorage.getItem(KEY) || 'light').toLowerCase());
+
+      if (btn) {
+        btn.addEventListener('click', () => {
+          const next = (ROOT.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+          apply(next);
+        });
+      }
+    })();
   </script>
 </body>
 </html>

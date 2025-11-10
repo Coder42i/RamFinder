@@ -16,27 +16,30 @@
         <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Admin</span></nav>
       </div>
       <div id="userbox" class="badge"></div>
+
+      <!-- NEW: theme toggle button -->
+      <button id="themeToggle" class="btn secondary icon-btn" type="button" title="Switch to dark mode">🌙</button>
+
       <a id="loginLink" class="btn" href="login.html" style="width:auto">Log in</a>
       <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
     </header>
 
-    <!-- Tabs -->
     <div class="controls" style="gap:8px; flex-wrap:wrap">
       <button id="tabAdmins" class="chip" aria-pressed="true">Admins</button>
       <button id="tabResources" class="chip" aria-pressed="false">Resources</button>
       <span id="apiStatus" class="badge" style="margin-left:auto">Checking backend…</span>
     </div>
 
-    <!-- ===== Admins Panel ===== -->
-    <section id="panelAdmins" class="card" aria-label="Admin management">
+    <!-- Admins Panel -->
+    <section id="panelAdmins" class="card">
       <div class="subtitle" style="margin-bottom:10px">
-        Base admins live in <code>data/admins.json</code>. Overrides are browser-only (for demos).
-        Run <code>python app.py</code> to edit <code>data/admins.json</code> from the UI.
+        Base admins: <code>data/admins.json</code>. Overrides: browser-only for demos.
+        Run <code>python app.py</code> to permanently edit <code>data/admins.json</code>.
       </div>
 
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px">
         <input id="adminEmail" type="email" placeholder="new-admin@colostate.edu"
-               style="flex:1; background:#0f182b; border:1px solid #26324d; border-radius:8px; color:#e7edf7; padding:10px" />
+               style="flex:1; background:#fff; border:1px solid var(--line); border-radius:8px; color:var(--ink-2); padding:10px" />
         <button id="addAdminBtn" class="btn">Add Admin</button>
         <button id="exportAdminsBtn" class="btn" title="Download merged admins.json">Export</button>
       </div>
@@ -47,8 +50,8 @@
       </table>
     </section>
 
-    <!-- ===== Resources Panel ===== -->
-    <section id="panelResources" class="card" style="display:none" aria-label="Resources management">
+    <!-- Resources Panel -->
+    <section id="panelResources" class="card" style="display:none">
       <div class="subtitle" style="margin-bottom:10px">
         Create, edit, or delete campus resources. Writes require the backend (<code>python app.py</code>) and an admin session.
       </div>
@@ -56,7 +59,7 @@
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px">
         <button id="addResBtn" class="btn">Add Resource</button>
         <input id="resSearch" type="search" placeholder="Filter by name, type, building…" aria-label="Filter resources"
-               style="flex:1; background:#0f182b; border:1px solid #26324d; border-radius:8px; color:#e7edf7; padding:10px">
+               style="flex:1; background:#fff; border:1px solid var(--line); border-radius:8px; color:var(--ink-2); padding:10px">
       </div>
 
       <div id="resAlert" class="subtitle" style="color:#fca5a5; display:none;"></div>
@@ -71,7 +74,6 @@
       <!-- Inline form -->
       <div id="resFormWrap" class="card" style="margin-top:16px; display:none">
         <h3 id="resFormTitle">New Resource</h3>
-
         <div id="resFormAlert" class="subtitle" style="color:#fca5a5; display:none;"></div>
 
         <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px">
@@ -95,13 +97,11 @@
     <footer><div class="subtitle">Only admins can access this page; non-admins are redirected to Home.</div></footer>
   </div>
 
-  <!-- Load libs FIRST -->
+  <!-- Page scripts -->
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
-<script src="assets/theme.js"></script>
 
   <script>
-    // ===== Helpers =====
     const API = "http://127.0.0.1:5050";
     const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
@@ -113,26 +113,35 @@
       const openM = oh*60+om, closeM = ch*60+cm, curM = now.getHours()*60+now.getMinutes();
       return curM >= openM && curM <= closeM;
     }
-    function norm(s){return (s||'').toString().toLowerCase().trim();}
-    function show(el, on){ el.style.display = on ? '' : 'none'; }
-    function setBadge(badge, ok){
-      badge.textContent = ok ? 'Backend: online' : 'Backend: offline';
-      badge.style.borderColor = ok ? '#34d399' : '#fca5a5';
-      badge.style.color = ok ? '#34d399' : '#fca5a5';
-    }
-    async function apiHealth(){
-      try { const r = await fetch(`${API}/api/health`, {cache:'no-store'}); const j = await r.json(); return !!j.ok; }
-      catch { return false; }
+    function norm(s){return (s||'').toString().toLowerCase();}
+
+    function hoursRow(day, value){
+      const v = value || {};
+      const closed = !!v.closed;
+      const open = v.open || "08:00";
+      const close = v.close || "17:00";
+      return `
+        <div class="card" data-day="${day}" style="padding:10px">
+          <div style="font-weight:600; margin-bottom:4px">${day}</div>
+          <label class="toggle"><input type="checkbox" class="h_closed" ${closed?'checked':''}/> Closed</label>
+          <div style="display:flex; gap:6px; margin-top:6px">
+            <input type="time" class="h_open" value="${open}" ${closed?'disabled':''}/>
+            <span style="align-self:center">to</span>
+            <input type="time" class="h_close" value="${close}" ${closed?'disabled':''}/>
+          </div>
+        </div>`;
     }
 
-    // ===== Main =====
-    (function waitForAUTH(run){ if (window.AUTH) run(); else setTimeout(()=>waitForAUTH(run), 25); })(async function(){
-      // Refresh admin flag in stored session, then gate
+    (function waitForAUTH(run){
+      if (window.AUTH) run();
+      else setTimeout(() => waitForAUTH(run), 25);
+    })(async function initAdmin(){
+      // session & gate
       let sess = AUTH.current();
       if (sess) sess = await AUTH.refreshSessionAdmin();
-      if (!sess || !sess.admin) { window.location.href = 'index.html'; return; }
+      if (!sess || !sess.email || !sess.admin) { window.location.href = 'index.html'; return; }
 
-      // Header
+      // header ui
       const userbox   = document.getElementById('userbox');
       const loginLink = document.getElementById('loginLink');
       const logoutBtn = document.getElementById('logoutBtn');
@@ -158,10 +167,16 @@
 
       // Backend badge
       const apiBadge = document.getElementById('apiStatus');
-      let apiUp = await apiHealth();
-      setBadge(apiBadge, apiUp);
+      async function setApiBadge(){
+        const up = await AUTH.apiHealth();
+        apiBadge.textContent = up ? 'Backend: online' : 'Backend: offline';
+        apiBadge.style.borderColor = up ? '#34d399' : '#fca5a5';
+        apiBadge.style.color = up ? '#34d399' : '#fca5a5';
+        return up;
+      }
+      let apiUp = await setApiBadge();
 
-      // ---------- Admins panel ----------
+      // Admins panel
       const adminEmail = document.getElementById('adminEmail');
       const addAdminBtn = document.getElementById('addAdminBtn');
       const exportAdminsBtn = document.getElementById('exportAdminsBtn');
@@ -173,7 +188,6 @@
         try { const r = await fetch('data/admins.json', {cache:'no-store'}); baseList = await r.json(); }
         catch { baseList = []; }
         const baseSet = new Set((Array.isArray(baseList)?baseList:[]).map(e => (e||'').toLowerCase()));
-
         const merged = await AUTH.getAdminsMerged();
         merged.sort((a,b)=>a.localeCompare(b, undefined, {sensitivity:'base'}));
         for(const email of merged){
@@ -181,7 +195,6 @@
           const isBase = baseSet.has(lower);
           const source = isBase ? 'Base (file)' : 'Override (local)';
           const canRemove = isBase ? apiUp : true;
-
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${email}</td>
@@ -201,7 +214,7 @@
           await AUTH.addAdmin(email);
           adminEmail.value = '';
           await AUTH.refreshSessionAdmin();
-          apiUp = await apiHealth(); setBadge(apiBadge, apiUp);
+          apiUp = await setApiBadge();
           await renderAdmins();
         } catch(e){ alert(e?.message || 'Add failed.'); }
       });
@@ -212,21 +225,21 @@
         if(!btn) return;
         const email = btn.getAttribute('data-email');
         const isBase = btn.getAttribute('data-base') === '1';
-        apiUp = await apiHealth(); setBadge(apiBadge, apiUp);
+        apiUp = await setApiBadge();
         if(isBase && !apiUp){ alert('Start backend (python app.py) to remove base admins.'); return; }
         if(!confirm(`Remove admin: ${email}?`)) return;
         try { await AUTH.removeAdmin(email); await AUTH.refreshSessionAdmin(); await renderAdmins(); }
         catch(err){ alert('Remove failed.'); }
       });
 
-      // ---------- Resources panel ----------
-      const addResBtn   = document.getElementById('addResBtn');
-      const resSearch   = document.getElementById('resSearch');
-      const resAlert    = document.getElementById('resAlert');
-      const resRows     = document.getElementById('resRows');
-      const resFormWrap = document.getElementById('resFormWrap');
-      const resFormTitle= document.getElementById('resFormTitle');
-      const resFormAlert= document.getElementById('resFormAlert');
+      // Resources panel
+      const addResBtn  = document.getElementById('addResBtn');
+      const resSearch  = document.getElementById('resSearch');
+      const resAlert   = document.getElementById('resAlert');
+      const resRows    = document.getElementById('resRows');
+      const resFormWrap= document.getElementById('resFormWrap');
+      const resFormTitle=document.getElementById('resFormTitle');
+      const resFormAlert=document.getElementById('resFormAlert');
 
       const f_name=document.getElementById('f_name');
       const f_type=document.getElementById('f_type');
@@ -234,31 +247,27 @@
       const f_room=document.getElementById('f_room');
       const f_notes=document.getElementById('f_notes');
       const hoursGrid=document.getElementById('hoursGrid');
-
       const saveResBtn=document.getElementById('saveResBtn');
       const cancelResBtn=document.getElementById('cancelResBtn');
 
       let RES_ALL = [];
       let EDITING_ID = null;
 
-      function hoursRow(day, value){
-        const v = value || {};
-        const closed = !!v.closed;
-        const open = v.open || "08:00";
-        const close = v.close || "17:00";
-        return `
-          <div class="card" data-day="${day}" style="padding:10px">
-            <div style="font-weight:600; margin-bottom:4px">${day}</div>
-            <label class="toggle"><input type="checkbox" class="h_closed" ${closed?'checked':''}/> Closed</label>
-            <div style="display:flex; gap:6px; margin-top:6px">
-              <input type="time" class="h_open" value="${open}" ${closed?'disabled':''}/>
-              <span style="align-self:center">to</span>
-              <input type="time" class="h_close" value="${close}" ${closed?'disabled':''}/>
-            </div>
-          </div>`;
-      }
       function populateHoursGrid(hours){
-        hoursGrid.innerHTML = DOW.map(d => hoursRow(d, hours?.[d])).join('');
+        hoursGrid.innerHTML = DOW.map(d => {
+          const v = hours?.[d] || {};
+          const closed = !!v.closed, open=v.open||'08:00', close=v.close||'17:00';
+          return `
+            <div class="card" data-day="${d}" style="padding:10px">
+              <div style="font-weight:600; margin-bottom:4px">${d}</div>
+              <label class="toggle"><input type="checkbox" class="h_closed" ${closed?'checked':''}/> Closed</label>
+              <div style="display:flex; gap:6px; margin-top:6px">
+                <input type="time" class="h_open" value="${open}" ${closed?'disabled':''}/>
+                <span style="align-self:center">to</span>
+                <input type="time" class="h_close" value="${close}" ${closed?'disabled':''}/>
+              </div>
+            </div>`;
+        }).join('');
         hoursGrid.querySelectorAll('.h_closed').forEach(chk=>{
           chk.addEventListener('change', (e)=>{
             const card = e.target.closest('[data-day]');
@@ -279,9 +288,8 @@
         return out;
       }
       function openForm(rec){
-        console.log('[RF] openForm', rec);
-        resFormAlert.textContent = ''; show(resFormAlert, false);
-        show(resFormWrap, true);
+        resFormAlert.textContent = ''; resFormAlert.style.display='none';
+        resFormWrap.style.display = '';
         if(rec){
           EDITING_ID = rec.id;
           resFormTitle.textContent = `Edit Resource #${rec.id}`;
@@ -294,13 +302,12 @@
         }else{
           EDITING_ID = null;
           resFormTitle.textContent = 'New Resource';
-          f_name.value = ''; f_type.value=''; f_building.value=''; f_room.value=''; f_notes.value='';
+          f_name.value = f_type.value = f_building.value = f_room.value = f_notes.value = '';
           populateHoursGrid({});
         }
-        // scroll to form to make it obvious
         resFormWrap.scrollIntoView({behavior:'smooth', block:'start'});
       }
-      function closeForm(){ show(resFormWrap, false); EDITING_ID=null; }
+      function closeForm(){ resFormWrap.style.display = 'none'; EDITING_ID=null; }
 
       function filterList(q){
         const nq = norm(q);
@@ -313,15 +320,14 @@
           const r = await fetch(`${API}/api/resources`, {cache:'no-store'});
           if(!r.ok) throw 0;
           RES_ALL = await r.json();
-          apiUp = await apiHealth(); setBadge(apiBadge, apiUp);
-          show(resAlert, false);
+          apiUp = await setApiBadge();
+          resAlert.style.display='none';
         }catch{
-          // fallback: read-only from file
           const rf = await fetch('data/resources.json', {cache:'no-store'});
           RES_ALL = await rf.json();
-          apiUp = false; setBadge(apiBadge, apiUp);
+          apiUp = false; await setApiBadge();
           resAlert.textContent = 'Backend offline: Add/Edit/Delete disabled (showing file data). Start with: python app.py';
-          show(resAlert, true);
+          resAlert.style.display='';
         }
       }
       function renderResources(){
@@ -345,20 +351,18 @@
         }
       }
 
-      // Wire buttons (make sure these always run)
-      addResBtn.addEventListener('click', ()=>{
-        console.log('[RF] Add clicked, apiUp=', apiUp);
+      // Wire
+      document.getElementById('addResBtn').addEventListener('click', ()=>{
         if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
         openForm(null);
       });
-      resSearch.addEventListener('input', renderResources);
+      document.getElementById('resSearch').addEventListener('input', renderResources);
 
-      resRows.addEventListener('click', async (e)=>{
+      document.getElementById('resRows').addEventListener('click', async (e)=>{
         const btn = e.target.closest('button[data-action]');
         if(!btn) return;
         const id = btn.getAttribute('data-id');
         const action = btn.getAttribute('data-action');
-        console.log('[RF] Row action:', action, 'id=', id);
 
         if(action === 'edit'){
           if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
@@ -380,14 +384,13 @@
         }
       });
 
-      saveResBtn.addEventListener('click', async ()=>{
-        console.log('[RF] Save clicked, editing=', EDITING_ID);
+      document.getElementById('saveResBtn').addEventListener('click', async ()=>{
         if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
         const name = f_name.value.trim();
         const type = f_type.value.trim();
         const building = f_building.value.trim();
         if(!name || !type || !building){
-          resFormAlert.textContent = 'Name, Type, and Building are required.'; show(resFormAlert, true);
+          resFormAlert.textContent = 'Name, Type, and Building are required.'; resFormAlert.style.display='';
           return;
         }
         const payload = {
@@ -406,22 +409,48 @@
         });
         if(!r.ok){
           const msg = await r.json().catch(()=>({error:'Save failed'}));
-          resFormAlert.textContent = msg.error || 'Save failed.'; show(resFormAlert, true);
+          resFormAlert.textContent = msg.error || 'Save failed.'; resFormAlert.style.display='';
           return;
         }
-        show(resFormAlert, false);
+        resFormAlert.style.display='none';
         closeForm();
         await loadResources(); renderResources();
       });
-      cancelResBtn.addEventListener('click', ()=>{ console.log('[RF] Cancel'); closeForm(); });
+      document.getElementById('cancelResBtn').addEventListener('click', closeForm);
 
-      // Initial loads
+      // Initial
       await renderAdmins();
       await loadResources(); renderResources();
-
-      // Default to Resources tab if you want to demo immediately:
-      // selectTab('resources');
     });
+  </script>
+
+  <!-- THEME INLINE -->
+  <script>
+    (function(){
+      const KEY = 'rf:theme';
+      const ROOT = document.documentElement;
+      const btn  = document.getElementById('themeToggle');
+
+      function apply(theme){
+        const t = (theme === 'dark') ? 'dark' : 'light';
+        ROOT.setAttribute('data-theme', t);
+        localStorage.setItem(KEY, t);
+        if (btn){
+          const dark = t === 'dark';
+          btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+          btn.title = dark ? 'Switch to light mode' : 'Switch to dark mode';
+          btn.textContent = dark ? '☀️' : '🌙';
+        }
+      }
+      apply((localStorage.getItem(KEY) || 'light').toLowerCase());
+
+      if (btn) {
+        btn.addEventListener('click', () => {
+          const next = (ROOT.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+          apply(next);
+        });
+      }
+    })();
   </script>
 </body>
 </html>

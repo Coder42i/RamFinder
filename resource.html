@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RamFinder • Search</title>
   <link rel="stylesheet" href="assets/styles.css" />
+<button id="themeToggle" class="btn secondary icon-btn" type="button" title="Switch to dark mode">🌙</button>
 </head>
 <body>
   <div class="container">
@@ -187,5 +188,34 @@
     async function init(){const res=await fetch(DATA_URL,{cache:'no-store'});DATA=await res.json();render(DATA,'');}
     init();
   </script>
+<script>
+  (function(){
+    const KEY = 'rf:theme';
+    const ROOT = document.documentElement;
+    const btn  = document.getElementById('themeToggle');
+
+    function apply(theme){
+      const t = (theme === 'dark') ? 'dark' : 'light';
+      ROOT.setAttribute('data-theme', t);
+      localStorage.setItem(KEY, t);
+      if (btn){
+        const dark = t === 'dark';
+        btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+        btn.title = dark ? 'Switch to light mode' : 'Switch to dark mode';
+        btn.textContent = dark ? '☀️' : '🌙';
+      }
+    }
+
+    // Default to light if not set
+    apply((localStorage.getItem(KEY) || 'light').toLowerCase());
+
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const next = (ROOT.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+        apply(next);
+      });
+    }
+  })();
+</script>
 </body>
 </html>
