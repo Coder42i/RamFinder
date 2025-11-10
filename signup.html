@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Log In • RamFinder</title>
+  <title>Sign Up • RamFinder</title>
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
@@ -11,26 +11,27 @@
     <header>
       <div class="logo" aria-hidden="true">RF</div>
       <div>
-        <h1>Welcome back</h1>
-        <div class="subtitle">Log in with your registered email.</div>
-        <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Log In</span></nav>
+        <h1>Create your account</h1>
+        <div class="subtitle">Use your email to sign up. You’ll be a standard user by default.</div>
+        <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Sign Up</span></nav>
       </div>
       <div id="userbox" class="badge">Guest</div>
+      <a class="btn" href="login.html" style="width:auto">Log in</a>
     </header>
 
-    <section class="card" aria-label="Log In">
+    <section class="card" aria-label="Sign Up">
       <div style="display:grid; gap:12px; max-width:420px">
         <div>
           <label>Email</label>
           <input id="email" type="email" placeholder="you@colostate.edu" />
         </div>
         <div>
-          <label>Name (optional, used for display)</label>
+          <label>Name (optional)</label>
           <input id="name" type="text" placeholder="Your name" />
         </div>
         <div class="actions">
-          <button id="loginBtn" class="btn">Log in</button>
-          <a class="btn" href="signup.html">Create a new account</a>
+          <button id="signupBtn" class="btn">Create account</button>
+          <a class="btn" href="login.html">I already have an account</a>
         </div>
         <div id="msg" class="subtitle" style="color:#fca5a5; display:none;"></div>
       </div>
@@ -43,16 +44,17 @@
     (function(){
       const email = document.getElementById('email');
       const name  = document.getElementById('name');
-      const btn   = document.getElementById('loginBtn');
+      const btn   = document.getElementById('signupBtn');
       const msg   = document.getElementById('msg');
 
       btn.addEventListener('click', async ()=>{
         msg.style.display = 'none';
         try{
-          const sess = await AUTH.login(email.value, name.value);
+          const sess = await AUTH.signup(email.value, name.value);
+          // After signup, you’re logged in as a standard user. Redirect home.
           window.location.href = 'index.html';
         }catch(e){
-          msg.textContent = e?.message || 'Login failed.';
+          msg.textContent = e?.message || 'Sign up failed.';
           msg.style.display = '';
         }
       });

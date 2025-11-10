@@ -1,152 +1,155 @@
-/* assets/auth.js — resilient, API-aware auth with session refresh */
+/* assets/auth.js — signup/login with users.json and admins.json.
+   Change: Admins are implicitly registered; on first admin login we also add them to users.json. */
 window.AUTH = window.AUTH || (() => {
   const SESSION_KEY = 'rf:session';
-  const USERS_KEY   = 'rf:users';
-  const ADM_OVR_KEY = 'rf:admins:override'; // local override list (demo mode)
+  const USERS_OVR   = 'rf:users:override';   // local fallback list (demo)
+  const ADM_OVR     = 'rf:admins:override';  // local fallback list (demo)
   const API_BASE    = 'http://127.0.0.1:5050';
 
-  // ----- utils -----
-  const normEmail = (e) => (e || '').trim().toLowerCase();
-  const uniq = (arr) => [...new Set((arr || []).map(normEmail))].filter(Boolean);
+  const norm = (e) => (e||'').trim().toLowerCase();
+  const uniq = (arr) => [...new Set((arr||[]).map(norm))].filter(Boolean);
 
-  function getJSON(key, fallback = null) {
-    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
-    catch { return fallback; }
-  }
-  function setJSON(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+  function getJSON(k, d=null){ try{ return JSON.parse(localStorage.getItem(k)) ?? d; } catch{ return d; } }
+  function setJSON(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
 
-  function current() {
-    const sess = getJSON(SESSION_KEY, null);
-    if (!sess || !sess.email) return null;
-    // normalize the shape (in case of older sessions)
-    return { email: normEmail(sess.email), name: sess.name || '', admin: !!sess.admin, ts: sess.ts || Date.now() };
+  function current(){
+    const s = getJSON(SESSION_KEY, null);
+    if (!s || !s.email) return null;
+    return { email: norm(s.email), name: s.name || '', admin: !!s.admin, ts: s.ts || Date.now() };
   }
-  function logout()  { localStorage.removeItem(SESSION_KEY); }
-  function ensureUsers(){
-    if (!Array.isArray(getJSON(USERS_KEY, []))) setJSON(USERS_KEY, []);
-  }
-  function upsertUser(email, name) {
-    ensureUsers();
-    const users = getJSON(USERS_KEY, []);
-    const e = normEmail(email);
-    const i = users.findIndex(u => normEmail(u.email) === e);
-    if (i >= 0) { if (name) users[i].name = name; }
-    else users.push({ email: e, name: name || e.split('@')[0], createdAt: new Date().toISOString() });
-    setJSON(USERS_KEY, users);
+  function logout(){ localStorage.removeItem(SESSION_KEY); }
+
+  // --- API helpers with graceful fallback ---
+  async function apiHealth(){
+    try{ const r = await fetch(`${API_BASE}/api/health`, {cache:'no-store'}); const j = await r.json(); return !!j.ok; }
+    catch{ return false; }
   }
 
-  // ----- API helpers with fallback -----
-  async function apiHealth() {
-    try {
-      const r = await fetch(`${API_BASE}/api/health`, { cache: 'no-store' });
-      if (!r.ok) throw 0;
-      const j = await r.json();
-      return !!j.ok;
-    } catch { return false; }
+  async function baseUsersFile(){
+    try{ const r = await fetch('data/users.json', {cache:'no-store'}); const j = await r.json(); return Array.isArray(j)?uniq(j):[]; }
+    catch{ return []; }
+  }
+  async function baseAdminsFile(){
+    try{ const r = await fetch('data/admins.json', {cache:'no-store'}); const j = await r.json(); return Array.isArray(j)?uniq(j):[]; }
+    catch{ return []; }
+  }
+  function ovrUsers(){ const v = getJSON(USERS_OVR, []); return Array.isArray(v)?uniq(v):[]; }
+  function ovrAdmins(){ const v = getJSON(ADM_OVR, []); return Array.isArray(v)?uniq(v):[]; }
+  function setOvrUsers(list){ setJSON(USERS_OVR, uniq(list||[])); }
+  function setOvrAdmins(list){ setJSON(ADM_OVR, uniq(list||[])); }
+
+  async function getUsers(){
+    // Users known to the system (file/override/API)
+    try{ const r = await fetch(`${API_BASE}/api/users`, {cache:'no-store'}); if(!r.ok) throw 0; return uniq(await r.json()); }
+    catch{ const base = await baseUsersFile(); return uniq([...base, ...ovrUsers()]); }
+  }
+  async function getAdmins(){
+    // Admins (file/override/API)
+    try{ const r = await fetch(`${API_BASE}/api/admins`, {cache:'no-store'}); if(!r.ok) throw 0; return uniq(await r.json()); }
+    catch{ const base = await baseAdminsFile(); return uniq([...base, ...ovrAdmins()]); }
   }
 
-  async function loadBaseAdminsFile() {
-    try {
-      const res = await fetch('data/admins.json', { cache: 'no-store' });
-      const list = await res.json();
-      return Array.isArray(list) ? uniq(list) : [];
-    } catch { return []; }
-  }
-
-  function getAdminsOverride() {
-    const v = getJSON(ADM_OVR_KEY, []);
-    return Array.isArray(v) ? uniq(v) : [];
-  }
-  function setAdminsOverride(list) {
-    setJSON(ADM_OVR_KEY, uniq(list || []));
-  }
-
-  async function apiGetAdmins() {
-    try {
-      const r = await fetch(`${API_BASE}/api/admins`, { cache: 'no-store' });
-      if (!r.ok) throw 0;
-      return uniq(await r.json());
-    } catch {
-      // fallback: base file + local override
-      const base = await loadBaseAdminsFile();
-      const ovr  = getAdminsOverride();
-      return uniq([...base, ...ovr]);
-    }
-  }
-
-  async function apiAddAdmin(email) {
-    email = normEmail(email);
-    // try API first
-    try {
-      const r = await fetch(`${API_BASE}/api/admins`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ email })
+  // Persist user (signup) via API, else local override
+  async function apiAddUser(email){
+    email = norm(email);
+    try{
+      const r = await fetch(`${API_BASE}/api/users`, {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email})
       });
-      if (!r.ok) throw 0;
+      if(!r.ok) throw 0;
       return uniq(await r.json());
-    } catch {
-      // fallback to local override
-      const ovr = getAdminsOverride();
-      if (!ovr.includes(email)) { ovr.push(email); setAdminsOverride(ovr); }
-      return apiGetAdmins();
+    }catch{
+      const list = ovrUsers();
+      if(!list.includes(email)){ list.push(email); setOvrUsers(list); }
+      return getUsers();
     }
   }
 
-  async function apiRemoveAdmin(email) {
-    email = normEmail(email);
-    try {
+  // Persist admin via API, else local override
+  async function apiAddAdmin(email){
+    email = norm(email);
+    try{
       const r = await fetch(`${API_BASE}/api/admins`, {
-        method: 'DELETE',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ email })
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email})
       });
-      if (!r.ok) throw 0;
+      if(!r.ok) throw 0;
       return uniq(await r.json());
-    } catch {
-      // fallback: local override
-      const ovr = getAdminsOverride().filter(x => normEmail(x) !== email);
-      setAdminsOverride(ovr);
-      return apiGetAdmins();
+    }catch{
+      const list = ovrAdmins();
+      if(!list.includes(email)){ list.push(email); setOvrAdmins(list); }
+      // Ensure user exists in local override as well
+      const u = ovrUsers(); if(!u.includes(email)){ u.push(email); setOvrUsers(u); }
+      return getAdmins();
     }
   }
 
-  // ----- public helpers -----
-  async function isAdmin(email) {
-    const list = await apiGetAdmins();
-    return list.includes(normEmail(email));
+  // --- Role checks ---
+  async function isRegistered(email){
+    const e = norm(email);
+    const users  = await getUsers();
+    const admins = await getAdmins();
+    // Treat admins as implicitly registered
+    return users.includes(e) || admins.includes(e);
+  }
+  async function isAdmin(email){
+    const admins = await getAdmins();
+    return admins.includes(norm(email));
   }
 
-  async function login(email, name) {
-    const e = normEmail(email);
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) throw new Error('Please enter a valid email address.');
-    upsertUser(e, name);
+  // --- Signup / Login ---
+  async function signup(email, name){
+    const e = norm(email);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) throw new Error('Please enter a valid email address.');
+    await apiAddUser(e); // writes to users.json when backend is up; otherwise local override
+    // Optional: auto-login after signup
+    return login(e, name);
+  }
+
+  async function login(email, name){
+    const e = norm(email);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) throw new Error('Please enter a valid email address.');
     const admin = await isAdmin(e);
-    const sess  = { email: e, name: name || e.split('@')[0], admin, ts: Date.now() };
+
+    // If not registered AND is admin, auto-register to users.json for consistency.
+    const registered = await isRegistered(e);
+    if(!registered && admin){
+      await apiAddUser(e); // best-effort (works offline via override too)
+    }
+    // Recompute after possible auto-add
+    const isNowRegistered = admin ? true : (await isRegistered(e));
+    if(!isNowRegistered) throw new Error('No account found. Please sign up first.');
+
+    const sess = { email: e, name: name || e.split('@')[0], admin, ts: Date.now() };
     setJSON(SESSION_KEY, sess);
     return sess;
   }
 
-  /**
-   * Recompute admin flag from latest admins and update stored session.
-   * Call this on each page load before using sess.admin.
-   */
-  async function refreshSessionAdmin() {
-    const sess = current();
-    if (!sess) return null;
-    const admin = await isAdmin(sess.email);
-    const updated = { ...sess, admin };
+  async function refreshSessionAdmin(){
+    const s = current();
+    if(!s) return null;
+    const admin = await isAdmin(s.email);
+    const updated = { ...s, admin };
     setJSON(SESSION_KEY, updated);
     return updated;
   }
 
-  async function getAdminsMerged() { return apiGetAdmins(); }
-  async function addAdmin(email)   { return apiAddAdmin(email); }
-  async function removeAdmin(email){ return apiRemoveAdmin(email); }
+  // --- Admin helpers used by Admin Cockpit ---
+  async function getAdminsMerged(){ return getAdmins(); }
+  async function addAdmin(email){ return apiAddAdmin(email); }
+  async function removeAdmin(email){
+    email = norm(email);
+    try{
+      const r = await fetch(`${API_BASE}/api/admins`, {method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email})});
+      if(!r.ok) throw 0;
+      return uniq(await r.json());
+    }catch{
+      const list = ovrAdmins().filter(x => x !== email); setOvrAdmins(list);
+      return getAdmins();
+    }
+  }
 
-  // Keep export around (useful for static/manual updates)
-  async function exportMergedAdmins() {
-    const merged = await apiGetAdmins();
+  async function exportMergedAdmins(){
+    const merged = await getAdmins();
     const blob = new Blob([JSON.stringify(merged, null, 2)], { type: 'application/json' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
@@ -156,10 +159,9 @@ window.AUTH = window.AUTH || (() => {
   }
 
   return {
-    current, logout, login,
-    refreshSessionAdmin,
-    isAdmin, getAdminsMerged,
-    addAdmin, removeAdmin, exportMergedAdmins,
+    current, logout, refreshSessionAdmin,
+    signup, login, isRegistered, isAdmin,
+    getAdminsMerged, addAdmin, removeAdmin, exportMergedAdmins,
     apiHealth
   };
 })();
