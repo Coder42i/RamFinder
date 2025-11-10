@@ -37,7 +37,7 @@
           <label class="toggle"><input id="openNow" type="checkbox" /> Open Now</label>
           <label class="toggle"><input id="groupedToggle" type="checkbox" checked /> Show results in separate groups</label>
         </div>
-        <!-- Chips are generated dynamically; they show only when needed in grouped mode -->
+        <!-- Chips are generated dynamically; show only when a group is expanded -->
         <div id="chips" class="chips" aria-label="Quick filters"></div>
       </div>
     </section>
@@ -48,9 +48,9 @@
       <span>Type <code class="kbd">/</code> to focus, <code class="kbd">Esc</code> to clear</span>
     </div>
 
-    <!-- In flat mode, we render cards directly into #results.
-         In grouped (accordion) mode, we render sections into #accordion. -->
+    <!-- Flat mode container -->
     <section class="results" id="results" aria-label="Search results"></section>
+    <!-- Grouped mode container -->
     <div id="accordion" class="group-accordion" aria-label="Grouped results"></div>
 
     <div id="empty" class="empty" hidden>No resources match your search.</div>
@@ -129,8 +129,8 @@
 
     // State
     let DATA=[]; 
-    let activeChip=null; // category slug when a chip is selected
-    let expandedGroup=null; // category slug when a group is expanded (accordion)
+    let activeChip=null;     // category slug when a chip is selected
+    let expandedGroup=null;  // category slug when a group is expanded (accordion)
     const q=document.getElementById('q'), results=document.getElementById('results'), accordion=document.getElementById('accordion'),
           count=document.getElementById('count'), empty=document.getElementById('empty'),
           clearBtn=document.getElementById('clearBtn'), openNow=document.getElementById('openNow'),
@@ -211,13 +211,31 @@
         </article>`;
     }
 
+    // Helpers to avoid stale DOM when switching modes
+    function clearViews(){
+      results.innerHTML = '';
+      accordion.innerHTML = '';
+    }
+    function setMode(grouped){
+      // Reset state & views
+      expandedGroup = null;
+      activeChip = null;
+      buildChips();
+      clearViews();
+      // Ensure containers visibility matches mode
+      results.hidden = grouped;
+      accordion.hidden = !grouped;
+      // Render fresh
+      render(filterData(q.value.trim()), q.value.trim());
+    }
+
     // Flat render (original grid)
     function renderFlat(list, query){
       const sess = AUTH.current();
       results.hidden = false;
       accordion.hidden = true;
-      results.classList.remove('grouped');
       chipsWrap.style.display = ''; // chips visible in flat mode
+      results.classList.remove('grouped');
       results.innerHTML='';
       if(!list.length){count.textContent='0 results';results.hidden=true;empty.hidden=false;return;}
       results.hidden=false;empty.hidden=true;count.textContent=`${list.length} result${list.length>1?'s':''}`;
@@ -231,7 +249,7 @@
       accordion.hidden = false;
       chipsWrap.style.display = expandedGroup ? '' : 'none'; // hide chips until a group is open
 
-      // Build groups: slug -> items
+      // Build groups
       const groups = new Map();
       for (const r of list){
         const key = slug(r.type || 'other');
@@ -254,7 +272,7 @@
       empty.hidden=true;
       count.textContent = `${total} result${total>1?'s':''} • ${groupCount} categor${groupCount>1?'ies':'y'}`;
 
-      // Render one category per line (collapsed by default)
+      // Render accordion
       accordion.innerHTML = ordered.map(key=>{
         const items = groups.get(key).slice().sort((a,b)=> a.name.localeCompare(b.name));
         const open = expandedGroup === key;
@@ -279,25 +297,25 @@
           const sec = btn.closest('.acc-section');
           const key = sec.getAttribute('data-key');
           if (expandedGroup === key){
-            // collapse
+            // collapse all
             expandedGroup = null;
             activeChip = null;
-            buildChips(); // refresh chip pressed states
+            buildChips();
             renderAccordion(filterData(q.value.trim()), q.value.trim());
             return;
           }
           // expand this, collapse others
           expandedGroup = key;
-          activeChip = key; // keep chips in sync
-          buildChips();     // refresh chips and pressed state
+          activeChip = key;
+          buildChips();
           renderAccordion(filterData(q.value.trim()), q.value.trim());
-          // focus scroll into view
           sec.scrollIntoView({behavior:'smooth', block:'start'});
         });
       });
     }
 
     function render(list,query){
+      clearViews(); // ensure we never leave stale content behind
       try{
         if (safeGroupedOn()) renderAccordion(list, query);
         else renderFlat(list, query);
@@ -314,19 +332,14 @@
     q.addEventListener('input',doSearch);
     clearBtn.addEventListener('click',()=>{
       q.value=''; q.focus();
-      activeChip=null; expandedGroup=null;
-      buildChips();
-      doSearch();
+      setMode(safeGroupedOn()); // resets states and re-renders in current mode
     });
     window.addEventListener('keydown',e=>{
       if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}
-      if(e.key==='Escape'){
-        q.value=''; activeChip=null; expandedGroup=null; buildChips(); doSearch(); q.blur();
-      }
+      if(e.key==='Escape'){ q.value=''; setMode(safeGroupedOn()); q.blur(); }
     });
     if (groupedToggle) groupedToggle.addEventListener('change', ()=>{
-      // when switching modes, reset accordion state and chips visibility
-      expandedGroup=null; activeChip=null; buildChips(); doSearch();
+      setMode(groupedToggle.checked);
     });
     openNow.addEventListener('change', ()=> doSearch());
 
@@ -349,7 +362,7 @@
       DATA=await res.json();
       buildTypeMap();
       buildChips();
-      doSearch();
+      setMode(true); // start grouped by default
     }
     init();
   </script>
