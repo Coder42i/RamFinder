@@ -12,7 +12,7 @@
       <div class="logo" aria-hidden="true">RF</div>
       <div style="flex:1">
         <h1>Admin Cockpit</h1>
-        <div class="subtitle">Manage admin emails (local override). Export to update data/admins.json later.</div>
+        <div class="subtitle">Manage admin emails and campus resources.</div>
         <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Admin</span></nav>
       </div>
       <div id="userbox" class="badge"></div>
@@ -20,141 +20,420 @@
       <button id="logoutBtn" class="btn" style="width:auto; display:none">Log out</button>
     </header>
 
-    <section class="card">
+    <!-- Tabs -->
+    <div class="controls" style="gap:8px; flex-wrap:wrap">
+      <button id="tabAdmins" class="chip" aria-pressed="true">Admins</button>
+      <button id="tabResources" class="chip" aria-pressed="false">Resources</button>
+      <span id="apiStatus" class="badge" style="margin-left:auto">Checking backend…</span>
+    </div>
+
+    <!-- ============ Admins Panel ============ -->
+    <section id="panelAdmins" class="card" aria-label="Admin management">
       <div class="subtitle" style="margin-bottom:10px">
-        <strong>Note:</strong> This cockpit updates a <em>local override</em> list in your browser for demo purposes.
-        Use <strong>Export</strong> to download the merged list and replace <code>data/admins.json</code> if you want to make it official.
+        Base admins come from <code>data/admins.json</code>. Overrides (if any) live in your browser and are for demos.
+        <br/>Run <code>python app.py</code> to permanently edit <code>data/admins.json</code>.
       </div>
 
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px">
         <input id="adminEmail" type="email" placeholder="new-admin@colostate.edu"
                style="flex:1; background:#0f182b; border:1px solid #26324d; border-radius:8px; color:#e7edf7; padding:10px" />
-        <button id="addBtn" class="btn">Add Admin</button>
-        <button id="exportBtn" class="btn">Export</button>
+        <button id="addAdminBtn" class="btn">Add Admin</button>
+        <button id="exportAdminsBtn" class="btn" title="Download merged admins.json">Export</button>
       </div>
 
       <table class="table">
-        <thead><tr><th>Email</th><th>Source</th><th style="width:140px">Actions</th></tr></thead>
+        <thead><tr><th>Email</th><th>Source</th><th style="width:160px">Actions</th></tr></thead>
         <tbody id="adminRows"></tbody>
       </table>
     </section>
 
-    <footer><div class="subtitle">Only admins can access this page. Non-admins are redirected.</div></footer>
+    <!-- ============ Resources Panel ============ -->
+    <section id="panelResources" class="card" style="display:none" aria-label="Resources management">
+      <div class="subtitle" style="margin-bottom:10px">
+        Create, edit, or delete campus resources. Writes require the backend (<code>python app.py</code>) and an admin session.
+      </div>
+
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px">
+        <button id="addResBtn" class="btn">Add Resource</button>
+        <input id="resSearch" type="search" placeholder="Filter by name, type, building…" aria-label="Filter resources"
+               style="flex:1; background:#0f182b; border:1px solid #26324d; border-radius:8px; color:#e7edf7; padding:10px">
+      </div>
+
+      <table class="table">
+        <thead><tr>
+          <th>ID</th><th>Name</th><th>Type</th><th>Building</th><th>Room</th><th>Open now?</th><th style="width:200px">Actions</th>
+        </tr></thead>
+        <tbody id="resRows"></tbody>
+      </table>
+
+      <!-- Simple inline form (Add/Edit) -->
+      <div id="resFormWrap" class="card" style="margin-top:16px; display:none">
+        <h3 id="resFormTitle">New Resource</h3>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px">
+          <div><label>Name</label><input id="f_name" type="text" /></div>
+          <div><label>Type</label><input id="f_type" type="text" placeholder="printer, vending, study, lab, restroom"/></div>
+          <div><label>Building</label><input id="f_building" type="text" /></div>
+          <div><label>Room</label><input id="f_room" type="text" /></div>
+          <div style="grid-column:1/-1"><label>Notes</label><textarea id="f_notes" rows="2"></textarea></div>
+        </div>
+
+        <h4 style="margin-top:14px">Weekly Hours</h4>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:10px" id="hoursGrid"></div>
+
+        <div class="actions" style="margin-top:14px">
+          <button id="saveResBtn" class="btn">Save</button>
+          <button id="cancelResBtn" class="btn">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <footer><div class="subtitle">Only admins can access this page; non-admins are redirected to Home.</div></footer>
   </div>
 
-<script src="assets/store.js"></script>
-<script src="assets/auth.js"></script>
+  <!-- Load libs FIRST -->
+  <script src="assets/store.js"></script>
+  <script src="assets/auth.js"></script>
+
 <script>
-  // Small helper: detect if the Flask API is running (so we can edit data/admins.json)
-  async function isApiLive() {
-    try {
-      const r = await fetch('http://127.0.0.1:5050/api/health', { cache: 'no-store' });
-      if (!r.ok) return false;
-      const j = await r.json();
-      return !!j.ok;
-    } catch { return false; }
-  }
-
-  (async function gate(){
+  (function waitForAUTH(run){
+    if (window.AUTH) run();
+    else setTimeout(() => waitForAUTH(run), 25);
+  })(async function initHeader(){
     const sess = AUTH.current();
-    if (!sess || !(await AUTH.isAdmin(sess.email))) {
-      window.location.href = 'index.html';
-      return;
-    }
-
-    // Header UI
     const userbox   = document.getElementById('userbox');
     const loginLink = document.getElementById('loginLink');
     const logoutBtn = document.getElementById('logoutBtn');
-    userbox.textContent = 'Admin • ' + (sess.email || '');
-    loginLink.style.display = 'none';
-    logoutBtn.style.display  = 'inline-block';
-    logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
 
-    // Cockpit UI elements
-    const emailInput = document.getElementById('adminEmail');
-    const addBtn     = document.getElementById('addBtn');
-    const exportBtn  = document.getElementById('exportBtn');
-    const rows       = document.getElementById('adminRows');
-
-    // Cache API state once (re-check on demand if you prefer)
-    const apiUp = await isApiLive();
-
-    // Render table with source labels ("Base" from file, "Override" from local)
-    async function render() {
-      rows.innerHTML = '';
-
-      // Base list from file
-      let baseList = [];
-      try {
-        const r = await fetch('data/admins.json', { cache: 'no-store' });
-        baseList = await r.json();
-      } catch { baseList = []; }
-      const baseSet = new Set((Array.isArray(baseList) ? baseList : []).map(e => (e||'').toLowerCase()));
-
-      // Merged list (base + override, or base + API list)
-      const merged = await AUTH.getAdminsMerged();
-      for (const email of merged) {
-        const lower = (email||'').toLowerCase();
-        const isBase = baseSet.has(lower);
-        const source = isBase ? 'Base (file)' : 'Override (local)';
-        const canRemove = !isBase || apiUp; // allow removing base only if API is live
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${email}</td>
-          <td>${source}</td>
-          <td>
-            <button class="btn" data-email="${email}" data-base="${isBase ? '1' : '0'}" ${canRemove ? '' : 'disabled title="Start the API (app.py) to remove base admins"'}>
-              Remove
-            </button>
-          </td>`;
-        rows.appendChild(tr);
-      }
+    if (sess) {
+      userbox.textContent = (sess.admin ? 'Admin • ' : '') + (sess.email || '');
+      loginLink.style.display = 'none';
+      logoutBtn.style.display  = 'inline-block';
+      logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
+    } else {
+      userbox.textContent = 'Guest';
+      loginLink.style.display = 'inline-block';
+      logoutBtn.style.display  = 'none';
     }
+  });
+</script>
 
-    // Add admin
-    addBtn.addEventListener('click', async () => {
-      const email = (emailInput.value || '').trim();
-      if (!email) return;
+  <script>
+    const API = "http://127.0.0.1:5050";
+
+    async function isApiLive() {
       try {
-        await AUTH.addAdmin(email);   // writes to API if up, otherwise to local override
-        emailInput.value = '';
-        await render();
-      } catch (e) {
-        alert(e?.message || 'Could not add admin.');
-      }
-    });
+        const r = await fetch(`${API}/api/health`, { cache: 'no-store' });
+        const j = await r.json();
+        return !!j.ok;
+      } catch { return false; }
+    }
+    const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function isOpenNow(item, now=new Date()){
+      const slot = item?.hours?.[DOW[now.getDay()]];
+      if(!slot || slot.closed) return false;
+      const [oh, om] = (slot.open||'00:00').split(':').map(Number);
+      const [ch, cm] = (slot.close||'00:00').split(':').map(Number);
+      const openM = oh*60+om, closeM = ch*60+cm, curM = now.getHours()*60+now.getMinutes();
+      return curM >= openM && curM <= closeM;
+    }
+    function norm(s){return (s||'').toString().toLowerCase();}
 
-    // Export merged list (optional but handy)
-    exportBtn.addEventListener('click', AUTH.exportMergedAdmins);
-
-    // Remove admin (works for overrides always; for base only if API is running)
-    rows.addEventListener('click', async (e) => {
-      const btn = e.target.closest('button[data-email]');
-      if (!btn) return;
-
-      const email = btn.getAttribute('data-email');
-      const isBase = btn.getAttribute('data-base') === '1';
-
-      if (isBase && !(await isApiLive())) {
-        alert('To remove a base admin, start the backend:\n\n  python app.py\n\nThen refresh this page and try again.');
+    (function waitForAUTH(run){
+      if (window.AUTH) run();
+      else setTimeout(() => waitForAUTH(run), 25);
+    })(async function initAdmin(){
+      // Gate: only admins
+      const sess = AUTH.current();
+      if (!sess || !(await AUTH.isAdmin(sess.email))) {
+        window.location.href = 'index.html';
         return;
       }
 
-      if (!confirm(`Remove admin: ${email}?`)) return;
+      // Header
+      const userbox   = document.getElementById('userbox');
+      const loginLink = document.getElementById('loginLink');
+      const logoutBtn = document.getElementById('logoutBtn');
+      userbox.textContent = 'Admin • ' + (sess.email || '');
+      loginLink.style.display = 'none';
+      logoutBtn.style.display  = 'inline-block';
+      logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
 
-      try {
-        await AUTH.removeAdmin(email);  // API path updates data/admins.json; fallback updates local override
-        await render();
-      } catch (err) {
-        alert('Remove failed. ' + (err?.message || ''));
+      // Tabs
+      const tabAdmins = document.getElementById('tabAdmins');
+      const tabResources = document.getElementById('tabResources');
+      const panelAdmins = document.getElementById('panelAdmins');
+      const panelResources = document.getElementById('panelResources');
+      function selectTab(which){
+        const isAdmins = which === 'admins';
+        tabAdmins.setAttribute('aria-pressed', isAdmins ? 'true' : 'false');
+        tabResources.setAttribute('aria-pressed', !isAdmins ? 'true' : 'false');
+        panelAdmins.style.display = isAdmins ? '' : 'none';
+        panelResources.style.display = !isAdmins ? '' : 'none';
       }
-    });
+      tabAdmins.addEventListener('click', ()=> selectTab('admins'));
+      tabResources.addEventListener('click', ()=> selectTab('resources'));
 
-    // Initial render
-    await render();
-  })();
-</script>
+      // API badge
+      const apiBadge = document.getElementById('apiStatus');
+      let apiUp = await isApiLive();
+      function setApiBadge(){
+        apiBadge.textContent = apiUp ? 'Backend: online' : 'Backend: offline';
+        apiBadge.style.borderColor = apiUp ? '#34d399' : '#fca5a5';
+        apiBadge.style.color = apiUp ? '#34d399' : '#fca5a5';
+      }
+      setApiBadge();
+
+      // ------------------- Admins panel -------------------
+      const adminEmail = document.getElementById('adminEmail');
+      const addAdminBtn = document.getElementById('addAdminBtn');
+      const exportAdminsBtn = document.getElementById('exportAdminsBtn');
+      const adminRows = document.getElementById('adminRows');
+
+      async function renderAdmins(){
+        adminRows.innerHTML = '';
+        let baseList = [];
+        try {
+          const r = await fetch('data/admins.json', {cache:'no-store'}); baseList = await r.json();
+        } catch { baseList = []; }
+        const baseSet = new Set((Array.isArray(baseList)?baseList:[]).map(e => (e||'').toLowerCase()));
+        const merged = await AUTH.getAdminsMerged();
+        merged.sort((a,b)=>a.localeCompare(b, undefined, {sensitivity:'base'}));
+        for(const email of merged){
+          const lower = (email||'').toLowerCase();
+          const isBase = baseSet.has(lower);
+          const source = isBase ? 'Base (file)' : 'Override (local)';
+          const canRemove = isBase ? apiUp : true;
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${email}</td>
+            <td>${source}</td>
+            <td>
+              <button class="btn" data-email="${email}" data-base="${isBase?'1':'0'}"
+                ${canRemove ? '' : 'disabled title="Start backend: python app.py"'}>Remove</button>
+            </td>`;
+          adminRows.appendChild(tr);
+        }
+      }
+
+      addAdminBtn.addEventListener('click', async ()=>{
+        const email = (adminEmail.value||'').trim();
+        if(!email) return;
+        try {
+          await AUTH.addAdmin(email);
+          adminEmail.value = '';
+          await renderAdmins();
+        } catch(e){ alert(e?.message || 'Add failed.'); }
+      });
+      exportAdminsBtn.addEventListener('click', AUTH.exportMergedAdmins);
+
+      adminRows.addEventListener('click', async (e)=>{
+        const btn = e.target.closest('button[data-email]');
+        if(!btn) return;
+        const email = btn.getAttribute('data-email');
+        const isBase = btn.getAttribute('data-base') === '1';
+        apiUp = await isApiLive(); setApiBadge();
+        if(isBase && !apiUp){ alert('Start backend (python app.py) to remove base admins.'); return; }
+        if(!confirm(`Remove admin: ${email}?`)) return;
+        try { await AUTH.removeAdmin(email); await renderAdmins(); }
+        catch(err){ alert('Remove failed.'); }
+      });
+
+      // ------------------- Resources panel -------------------
+      const addResBtn  = document.getElementById('addResBtn');
+      const resSearch  = document.getElementById('resSearch');
+      const resRows    = document.getElementById('resRows');
+      const resFormWrap= document.getElementById('resFormWrap');
+      const resFormTitle=document.getElementById('resFormTitle');
+      const f_name=document.getElementById('f_name');
+      const f_type=document.getElementById('f_type');
+      const f_building=document.getElementById('f_building');
+      const f_room=document.getElementById('f_room');
+      const f_notes=document.getElementById('f_notes');
+      const hoursGrid=document.getElementById('hoursGrid');
+      const saveResBtn=document.getElementById('saveResBtn');
+      const cancelResBtn=document.getElementById('cancelResBtn');
+
+      let RES_ALL = [];   // full list from server/file
+      let EDITING_ID = null;
+
+      function hoursRow(day, value){
+        const v = value || {};
+        const closed = !!v.closed;
+        const open = v.open || "08:00";
+        const close = v.close || "17:00";
+        return `
+          <div class="card" data-day="${day}" style="padding:10px">
+            <div style="font-weight:600; margin-bottom:4px">${day}</div>
+            <label class="toggle"><input type="checkbox" class="h_closed" ${closed?'checked':''}/> Closed</label>
+            <div style="display:flex; gap:6px; margin-top:6px">
+              <input type="time" class="h_open" value="${open}" ${closed?'disabled':''}/>
+              <span style="align-self:center">to</span>
+              <input type="time" class="h_close" value="${close}" ${closed?'disabled':''}/>
+            </div>
+          </div>`;
+      }
+
+      function buildHoursFromGrid(){
+        const out = {};
+        for(const day of DOW){
+          const card = hoursGrid.querySelector(`[data-day="${day}"]`);
+          const closed = card.querySelector('.h_closed').checked;
+          const open   = card.querySelector('.h_open').value || "00:00";
+          const close  = card.querySelector('.h_close').value || "00:00";
+          out[day] = { open, close, closed };
+        }
+        return out;
+      }
+
+      function populateHoursGrid(hours){
+        hoursGrid.innerHTML = DOW.map(d => hoursRow(d, hours?.[d])).join('');
+        // enable/disable by closed checkbox
+        hoursGrid.querySelectorAll('.h_closed').forEach(chk=>{
+          chk.addEventListener('change', (e)=>{
+            const card = e.target.closest('[data-day]');
+            card.querySelector('.h_open').disabled = e.target.checked;
+            card.querySelector('.h_close').disabled = e.target.checked;
+          });
+        });
+      }
+
+      function openForm(rec){
+        resFormWrap.style.display = '';
+        if(rec){
+          EDITING_ID = rec.id;
+          resFormTitle.textContent = `Edit Resource #${rec.id}`;
+          f_name.value = rec.name || '';
+          f_type.value = rec.type || '';
+          f_building.value = rec.building || '';
+          f_room.value = rec.room || '';
+          f_notes.value = rec.notes || '';
+          populateHoursGrid(rec.hours);
+        }else{
+          EDITING_ID = null;
+          resFormTitle.textContent = 'New Resource';
+          f_name.value = ''; f_type.value=''; f_building.value=''; f_room.value=''; f_notes.value='';
+          populateHoursGrid({});
+        }
+      }
+
+      function closeForm(){
+        resFormWrap.style.display = 'none';
+        EDITING_ID = null;
+      }
+
+      function filterList(q){
+        const nq = norm(q);
+        if(!nq) return RES_ALL;
+        return RES_ALL.filter(r => {
+          const hay = [r.name, r.type, r.building, r.room, r.notes].map(norm).join(' ');
+          return hay.includes(nq);
+        });
+      }
+
+      async function loadResources(){
+        // Try API; fall back to file (read-only)
+        try{
+          const r = await fetch(`${API}/api/resources`, {cache:'no-store'});
+          if(!r.ok) throw new Error();
+          RES_ALL = await r.json();
+          apiUp = await isApiLive(); setApiBadge();
+        }catch{
+          const rf = await fetch('data/resources.json', {cache:'no-store'});
+          RES_ALL = await rf.json();
+          apiUp = false; setApiBadge();
+        }
+      }
+
+      function renderResources(){
+        resRows.innerHTML = '';
+        const list = filterList(resSearch.value).slice().sort((a,b)=> a.name.localeCompare(b.name));
+        for(const r of list){
+          const openNow = isOpenNow(r);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${r.id}</td>
+            <td>${r.name}</td>
+            <td>${r.type}</td>
+            <td>${r.building}</td>
+            <td>${r.room || ''}</td>
+            <td><span class="${openNow?'open':'closed'}">${openNow?'Open':'Closed'}</span></td>
+            <td>
+              <button class="btn" data-action="edit" data-id="${r.id}" ${apiUp?'':'disabled title="Backend offline"'}>Edit</button>
+              <button class="btn" data-action="del" data-id="${r.id}"  ${apiUp?'':'disabled title="Backend offline"'}>Delete</button>
+            </td>`;
+          resRows.appendChild(tr);
+        }
+      }
+
+      addResBtn.addEventListener('click', ()=>{
+        if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
+        openForm(null);
+      });
+
+      resSearch.addEventListener('input', renderResources);
+
+      resRows.addEventListener('click', async (e)=>{
+        const btn = e.target.closest('button[data-action]');
+        if(!btn) return;
+        const id = btn.getAttribute('data-id');
+        const action = btn.getAttribute('data-action');
+        if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
+
+        if(action === 'edit'){
+          const rec = RES_ALL.find(x => String(x.id) === String(id));
+          if(!rec) return;
+          openForm(rec);
+        } else if(action === 'del'){
+          if(!confirm(`Delete resource #${id}?`)) return;
+          const r = await fetch(`${API}/api/resources/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type':'application/json', 'X-User-Email': sess.email }
+          });
+          if(!r.ok){ alert('Delete failed.'); return; }
+          await loadResources();
+          renderResources();
+        }
+      });
+
+      saveResBtn.addEventListener('click', async ()=>{
+        if(!apiUp){ alert('Backend offline. Start with: python app.py'); return; }
+        const payload = {
+          name: f_name.value.trim(),
+          type: f_type.value.trim(),
+          building: f_building.value.trim(),
+          room: f_room.value.trim(),
+          notes: f_notes.value,
+          hours: buildHoursFromGrid()
+        };
+        let url = `${API}/api/resources`;
+        let method = 'POST';
+        if(EDITING_ID){
+          url = `${API}/api/resources/${encodeURIComponent(EDITING_ID)}`;
+          method = 'PUT';
+        }
+        const r = await fetch(url, {
+          method,
+          headers: { 'Content-Type':'application/json', 'X-User-Email': sess.email },
+          body: JSON.stringify(payload)
+        });
+        if(!r.ok){
+          const msg = await r.json().catch(()=>({error:'Save failed'}));
+          alert(msg.error || 'Save failed.');
+          return;
+        }
+        closeForm();
+        await loadResources();
+        renderResources();
+      });
+
+      cancelResBtn.addEventListener('click', closeForm);
+
+      // Initial loads
+      await renderAdmins();
+      await loadResources();
+      renderResources();
+    });
+  </script>
 </body>
 </html>
