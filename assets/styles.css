@@ -301,3 +301,50 @@ header .btn{ width:auto; }
 :root[data-theme="dark"] .icon-btn:hover {
   background: #13231a;
 }
+
+/* === Contrast boost (Light theme) — paste at end of styles.css === */
+:root{
+  /* Darker base inks */
+  --ink:   #0b1f14;   /* body text */
+  --ink-2: #102a1a;   /* titles / rows */
+  --muted: #475569;   /* subtitles, meta text */
+  --line:  #D9DEE4;   /* subtle borders a bit stronger */
+}
+
+/* Headings & titles pop more */
+.name{ color: var(--ink-2); }
+h1, h2, h3, h4{ color: var(--ink-2); }
+
+/* General rows and small text */
+.row{ color: var(--ink-2); }
+.subtitle{ color: var(--muted); }
+
+/* Inputs: darker text + clearer placeholder */
+input[type="text"], input[type="email"], input[type="search"], input[type="time"], textarea, select{
+  color: var(--ink-2);
+  border-color: var(--line);
+}
+input::placeholder, textarea::placeholder{
+  color: #5b6673; /* darker than before */
+  opacity: .95;
+}
+
+/* Links a bit stronger in light mode */
+a{ color: #1E4D2B; font-weight: 600; }
+
+/* Table headers/body: clearer contrast */
+.table thead th{
+  color: var(--ink-2);
+  background: #EEF3EE; /* softly tinted header */
+}
+.table td{ color: var(--ink-2); }
+
+/* Chips: stronger default text in light mode */
+.chip{ color: var(--ink-2); border-color: var(--line); }
+.chip[aria-pressed="true"]{
+  color: var(--ink);
+  border-color: #B8B166; /* gold-ish outline for selected */
+}
+
+/* Empty state text a bit darker */
+.empty{ color: #53606d; }
