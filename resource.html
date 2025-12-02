@@ -36,13 +36,11 @@
     </footer>
   </div>
 
-  <!-- Load shared libs -->
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
   <script src="assets/favs.js"></script>
   <script src="assets/theme.js"></script>
 
-  <!-- Header session controller -->
   <script>
     (function initHeader(){
       const sess = AUTH.current();
@@ -65,7 +63,6 @@
     })();
   </script>
 
-  <!-- Details page logic -->
   <script>
     const DATA_URL = 'data/resources.json';
     const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -73,7 +70,6 @@
     const qs = new URLSearchParams(location.search);
     const RESOURCE_ID = (qs.get('id') || '').trim();
 
-    // CHANGE THIS to whatever address should receive issue reports / feedback
     const REPORT_EMAIL = 'ram-finder-admin@colostate.edu';
 
     function esc(s){ return (s ?? '').toString()
@@ -109,7 +105,6 @@
       return `<button class="btn" id="favBtn" data-id="${esc(id)}" aria-pressed="${pressed}" ${disabled}>${label}</button>`;
     }
 
-    // Shared copy helper (used by share buttons)
     async function copyLinkToClipboard(url, message){
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -161,14 +156,15 @@
             <strong class="${open?'open':'closed'}">${open ? 'Open Now' : 'Closed'}</strong>
           </div>
 
-          ${item.notes ? `<p style="margin:.25rem 0 1rem 0">${esc(item.notes)}</p>` : ''}
+          ${item.notes ? `<p style="margin:.25rem 0 .75rem 0">${esc(item.notes)}</p>` : ''}
+
+          ${item.accessibility ? `<p class="row" style="margin:.25rem 0 .75rem 0"><strong>Accessibility:</strong> ♿ ${esc(item.accessibility)}</p>` : ''}
 
           ${hoursTable(item.hours)}
 
           <div class="actions" style="margin-top:1rem; gap:.5rem; flex-wrap:wrap">
             <a class="btn" id="directionsLink" href="https://www.google.com/maps/search/${mapQ}" target="_blank" rel="noopener">Directions</a>
 
-            <!-- Share buttons -->
             <button
               class="btn icon-btn"
               type="button"
@@ -185,7 +181,6 @@
               aria-label="Copy directions link"
             >📍</button>
 
-            <!-- NEW: Feedback dropdown (Report Issue / Provide Feedback) -->
             <details class="feedback-menu" style="position:relative;">
               <summary
                 class="btn"
@@ -225,7 +220,6 @@
         </article>
       `;
 
-      // Favorite toggle
       const favBtn = document.getElementById('favBtn');
       if (favBtn){
         favBtn.addEventListener('click', () => {
@@ -238,7 +232,6 @@
         });
       }
 
-      // Share buttons
       const shareResBtn = document.getElementById('shareResBtn');
       const shareLocBtn = document.getElementById('shareLocBtn');
       const directionsLink = document.getElementById('directionsLink');
@@ -255,7 +248,6 @@
         });
       }
 
-      // Feedback dropdown: Report Issue
       const reportIssueBtn = document.getElementById('reportIssueBtn');
       if (reportIssueBtn) {
         reportIssueBtn.addEventListener('click', () => {
@@ -276,7 +268,6 @@
         });
       }
 
-      // Feedback dropdown: Provide Feedback
       const feedbackBtn = document.getElementById('feedbackBtn');
       if (feedbackBtn) {
         feedbackBtn.addEventListener('click', () => {

@@ -8,39 +8,38 @@
 </head>
 <body>
   <div class="container">
-
-<header class="app-header">
-  <div class="brand-block">
-    <div class="logo" aria-hidden="true">RF</div>
-    <div class="brand-text">
-      <h1>RamFinder – Campus Resources</h1>
-      <div class="subtitle">Search resources, see what’s open now, get directions, and save favorites.</div>
-      <nav class="breadcrumb"><a href="index.html">Home</a></nav>
-    </div>
-  </div>
-
-  <div class="header-actions">
-    <div id="userbox" class="badge">Guest</div>
-    <button id="themeToggle" class="btn secondary icon-btn" type="button" title="Switch to dark mode">🌙</button>
-    <a id="favLink" class="btn" href="favorites.html" style="display:none">Favorites</a>
-    <a id="loginLink" class="btn" href="login.html">Log in</a>
-    <button id="logoutBtn" class="btn" style="display:none">Log out</button>
-    <a id="adminLink" class="btn" href="admin.html" style="display:none">Admin</a>
-  </div>
-</header>
+    <!-- Restored simple header; theme button will be injected by theme.js -->
+    <header>
+      <div class="logo" aria-hidden="true">RF</div>
+      <div>
+        <h1>RamFinder – Campus Resources</h1>
+        <div class="subtitle">
+          Search resources, see what’s open now, get directions, and save favorites.
+        </div>
+        <nav class="breadcrumb"><a href="index.html">Home</a></nav>
+      </div>
+      <div id="userbox" class="badge">Guest</div>
+      <a id="favLink" class="btn" href="favorites.html" style="display:none">Favorites</a>
+      <a id="loginLink" class="btn" href="login.html">Log in</a>
+      <button id="logoutBtn" class="btn" style="display:none">Log out</button>
+      <a id="adminLink" class="btn" href="admin.html" style="display:none">Admin</a>
+    </header>
 
     <section aria-label="Search tools">
       <div class="searchbar" role="search">
-        <input id="q" type="search" placeholder="Search by name, type, or building (e.g., printer, vending, Morgan)" aria-label="Search resources" autofocus />
+        <input id="q" type="search"
+               placeholder="Search by name, type, or building (e.g., printer, vending, Morgan)"
+               aria-label="Search resources" autofocus />
         <button id="clearBtn" aria-label="Clear search">Clear</button>
       </div>
 
       <div class="controls">
         <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap">
           <label class="toggle"><input id="openNow" type="checkbox" /> Open Now</label>
-          <label class="toggle"><input id="groupedToggle" type="checkbox" checked /> Show results in separate groups</label>
+          <label class="toggle"><input id="groupedToggle" type="checkbox" checked />
+            Show results in separate groups
+          </label>
         </div>
-        <!-- Chips are generated dynamically; show only when a group is expanded -->
         <div id="chips" class="chips" aria-label="Quick filters"></div>
       </div>
     </section>
@@ -63,15 +62,16 @@
     </footer>
   </div>
 
-  <!-- Page scripts -->
+  <!-- Shared assets -->
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
   <script src="assets/favs.js"></script>
+  <script src="assets/theme.js"></script>
 
   <!-- Header session controller -->
   <script>
-    (async function initHeader(){
-      const sess = AUTH.current();
+    (function initHeader(){
+      const sess      = AUTH.current();
       const userbox   = document.getElementById('userbox');
       const loginLink = document.getElementById('loginLink');
       const logoutBtn = document.getElementById('logoutBtn');
@@ -99,24 +99,29 @@
     })();
   </script>
 
-  <!-- Search + Favorites logic with dynamic chips & accordion groups -->
+  <!-- Search + favorites + share + accessibility logic -->
   <script>
     const DATA_URL = 'data/resources.json';
     const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-    // Normalizers
-    const norm = (s) => (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    const slug = (s) => norm(s).replace(/[^a-z0-9]+/g,''); // "Bike Rack" -> "bikerack"
+    const norm = (s) => (s||'').toString().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const slug = (s) => norm(s).replace(/[^a-z0-9]+/g,'');
     const titleCase = (s) => {
       const t = (s||'').toString().trim();
       if (!t) return 'Other';
       return t.replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1));
     };
 
-    function escapeHtml(str){return (str+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function escapeHtml(str){
+      return (str+"").replace(/&/g,'&amp;')
+                     .replace(/</g,'&lt;')
+                     .replace(/>/g,'&gt;');
+    }
     function escapeRegExp(str){return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');}
     function highlight(text, query){
-      const t = text ?? ''; const qn = norm(query).trim();
+      const t = text ?? '';
+      const qn = norm(query).trim();
       if(!qn) return escapeHtml(t);
       const re = new RegExp('(' + escapeRegExp(qn) + ')', 'ig');
       return escapeHtml(t).replace(re, '<mark>$1</mark>');
@@ -126,20 +131,26 @@
       if(!slot || slot.closed) return false;
       const [oh, om] = (slot.open||'00:00').split(':').map(Number);
       const [ch, cm] = (slot.close||'00:00').split(':').map(Number);
-      const openM = oh*60+om, closeM = ch*60+cm, curM = now.getHours()*60+now.getMinutes();
+      const openM = oh*60+om, closeM = ch*60+cm;
+      const curM  = now.getHours()*60+now.getMinutes();
       return curM>=openM && curM<=closeM;
     }
 
-    // State
     let DATA=[]; 
-    let activeChip=null;     // category slug when a chip is selected
-    let expandedGroup=null;  // category slug when a group is expanded (accordion)
-    const q=document.getElementById('q'), results=document.getElementById('results'), accordion=document.getElementById('accordion'),
-          count=document.getElementById('count'), empty=document.getElementById('empty'),
-          clearBtn=document.getElementById('clearBtn'), openNow=document.getElementById('openNow'),
-          chipsWrap=document.getElementById('chips'), groupedToggle=document.getElementById('groupedToggle');
+    let activeChip=null;
+    let expandedGroup=null;
 
-    const typeMap = new Map(); // slug -> display label
+    const q           = document.getElementById('q');
+    const results     = document.getElementById('results');
+    const accordion   = document.getElementById('accordion');
+    const count       = document.getElementById('count');
+    const empty       = document.getElementById('empty');
+    const clearBtn    = document.getElementById('clearBtn');
+    const openNow     = document.getElementById('openNow');
+    const chipsWrap   = document.getElementById('chips');
+    const groupedToggle = document.getElementById('groupedToggle');
+
+    const typeMap = new Map();
     function labelFor(sl){ return typeMap.get(sl) || titleCase(sl); }
     function safeGroupedOn(){ return groupedToggle ? !!groupedToggle.checked : true; }
 
@@ -155,26 +166,38 @@
     }
 
     function buildChips(){
-      // Chips represent categories; we show/hide based on accordion state.
-      const ORDER = ['printer','medical','hospital','study','lab','restroom','vending','bikerack','other'];
+      const ORDER = ['printer','medical','hospital','study','lab','restroom',
+                     'vending','bikerack','other'];
       const present = Array.from(typeMap.keys());
       const ordered = [
         ...ORDER.filter(k => present.includes(k)),
-        ...present.filter(k => !ORDER.includes(k)).sort((a,b)=> labelFor(a).localeCompare(labelFor(b), undefined, {sensitivity:'base'}))
+        ...present.filter(k => !ORDER.includes(k))
+                 .sort((a,b)=> labelFor(a).localeCompare(
+                      labelFor(b), undefined, {sensitivity:'base'}))
       ];
 
       chipsWrap.innerHTML = ordered.map(k => 
-        `<button class="chip" data-chip="${k}" aria-pressed="${activeChip===k?'true':'false'}">${escapeHtml(labelFor(k))}</button>`
+        `<button class="chip" data-chip="${k}"
+                 aria-pressed="${activeChip===k?'true':'false'}">
+           ${escapeHtml(labelFor(k))}
+         </button>`
       ).join('');
 
       chipsWrap.querySelectorAll('.chip').forEach(btn=>{
         btn.addEventListener('click',()=>{
-          const val=btn.dataset.chip;
-          const pressed=btn.getAttribute('aria-pressed')==='true';
-          chipsWrap.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
-          if(!pressed){ btn.setAttribute('aria-pressed','true'); activeChip=val; expandedGroup=val; }
-          else { activeChip=null; expandedGroup=null; }
-          doSearch(); // will render accordion with only that group expanded
+          const val     = btn.dataset.chip;
+          const pressed = btn.getAttribute('aria-pressed')==='true';
+          chipsWrap.querySelectorAll('.chip')
+            .forEach(c=>c.setAttribute('aria-pressed','false'));
+          if(!pressed){
+            btn.setAttribute('aria-pressed','true');
+            activeChip   = val;
+            expandedGroup= val;
+          } else {
+            activeChip   = null;
+            expandedGroup= null;
+          }
+          doSearch();
         });
       });
     }
@@ -182,21 +205,25 @@
     function filterData(query){
       const nq=norm(query);
       return DATA.filter(item=>{
-        const hay=[item.name,item.type,item.building,item.room,item.notes].map(norm).join(' ');
-        const chipOk=activeChip ? slug(item.type)===activeChip : true;
-        const openOk=openNow.checked?isOpenNow(item):true;
-        return chipOk&&openOk&&(nq===''||hay.includes(nq));
+        const hay=[item.name,item.type,item.building,item.room,
+                   item.notes,item.accessibility]
+                   .map(norm).join(' ');
+        const chipOk = activeChip ? slug(item.type)===activeChip : true;
+        const openOk = openNow.checked ? isOpenNow(item) : true;
+        return chipOk && openOk && (nq==='' || hay.includes(nq));
       });
     }
 
     function favButtonHTML(signedIn, isFav, id){
-      const label = isFav ? '★ Favorited' : '☆ Favorite';
-      const pressed = isFav ? 'true' : 'false';
-      const disabled = signedIn ? '' : 'disabled title="Log in to use favorites"';
-      return `<button class="btn" data-action="fav" data-id="${id}" aria-pressed="${pressed}" ${disabled}>${label}</button>`;
+      const label    = isFav ? '★ Favorited' : '☆ Favorite';
+      const pressed  = isFav ? 'true' : 'false';
+      const disabled = signedIn ? '' :
+        'disabled title="Log in to use favorites"';
+      return `<button class="btn" data-action="fav"
+                      data-id="${id}" aria-pressed="${pressed}"
+                      ${disabled}>${label}</button>`;
     }
 
-    // NEW: helper to copy links to clipboard
     async function copyLinkToClipboard(url, message){
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -212,82 +239,97 @@
     }
 
     function cardHTML(r, query, sess){
-      const open=isOpenNow(r);
+      const open  = isOpenNow(r);
       const isFav = !!(sess && FAVS.has(sess.email, r.id));
-      const lbl = labelFor(slug(r.type || 'other'));
+      const lbl   = labelFor(slug(r.type || 'other'));
       return `
         <article class="card">
           <div class="badge">${escapeHtml(lbl)}</div>
-          <div class="name"><a href="resource.html?id=${encodeURIComponent(r.id)}" style="color:inherit;text-decoration:none">${highlight(r.name,query)}</a></div>
-          <div class="row"><span class="dot"></span><span>${highlight(r.building+(r.room?', '+r.room:''),query)}</span></div>
-          <div class="row"><strong class="${open?'open':'closed'}">${open?'Open Now':'Closed'}</strong></div>
+          <div class="name">
+            <a href="resource.html?id=${encodeURIComponent(r.id)}"
+               style="color:inherit;text-decoration:none">
+              ${highlight(r.name,query)}
+            </a>
+          </div>
+          <div class="row">
+            <span class="dot"></span>
+            <span>${highlight(r.building+(r.room?', '+r.room:''),query)}</span>
+          </div>
+          <div class="row">
+            <strong class="${open?'open':'closed'}">
+              ${open?'Open Now':'Closed'}
+            </strong>
+          </div>
+          ${r.accessibility
+            ? `<div class="row"><span>♿ ${highlight(r.accessibility, query)}</span></div>`
+            : ''}
           <div class="actions">
-            <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
-            <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a>
+            <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">
+              Details
+            </a>
+            <a class="btn"
+               href="https://www.google.com/maps/search/${
+                 encodeURIComponent(r.name+' '+r.building+
+                   ' Colorado State University')
+               }"
+               target="_blank">
+              Directions
+            </a>
 
-            <!-- New share buttons -->
-            <button
-              class="btn icon-btn"
-              type="button"
-              data-action="share-resource"
-              data-id="${r.id}"
-              title="Copy link to this resource"
-              aria-label="Copy link to this resource"
-            >🔗</button>
+            <button class="btn icon-btn" type="button"
+                    data-action="share-resource" data-id="${r.id}"
+                    title="Copy link to this resource"
+                    aria-label="Copy link to this resource">🔗</button>
 
-            <button
-              class="btn icon-btn"
-              type="button"
-              data-action="share-location"
-              data-id="${r.id}"
-              title="Copy directions link"
-              aria-label="Copy directions link"
-            >📍</button>
+            <button class="btn icon-btn" type="button"
+                    data-action="share-location" data-id="${r.id}"
+                    title="Copy directions link"
+                    aria-label="Copy directions link">📍</button>
 
             ${favButtonHTML(!!sess, isFav, r.id)}
           </div>
         </article>`;
     }
 
-    // Helpers to avoid stale DOM when switching modes
     function clearViews(){
-      results.innerHTML = '';
+      results.innerHTML   = '';
       accordion.innerHTML = '';
     }
     function setMode(grouped){
-      // Reset state & views
       expandedGroup = null;
-      activeChip = null;
+      activeChip    = null;
       buildChips();
       clearViews();
-      // Ensure containers visibility matches mode
-      results.hidden = grouped;
+      results.hidden   = grouped;
       accordion.hidden = !grouped;
-      // Render fresh
       render(filterData(q.value.trim()), q.value.trim());
     }
 
-    // Flat render (original grid)
     function renderFlat(list, query){
       const sess = AUTH.current();
-      results.hidden = false;
+      results.hidden   = false;
       accordion.hidden = true;
-      chipsWrap.style.display = ''; // chips visible in flat mode
+      chipsWrap.style.display = '';
       results.classList.remove('grouped');
       results.innerHTML='';
-      if(!list.length){count.textContent='0 results';results.hidden=true;empty.hidden=false;return;}
-      results.hidden=false;empty.hidden=true;count.textContent=`${list.length} result${list.length>1?'s':''}`;
+      if(!list.length){
+        count.textContent='0 results';
+        results.hidden=true;
+        empty.hidden=false;
+        return;
+      }
+      results.hidden=false;
+      empty.hidden=true;
+      count.textContent=`${list.length} result${list.length>1?'s':''}`;
       results.innerHTML = list.map(r=>cardHTML(r,query,sess)).join('');
     }
 
-    // Accordion render (grouped)
     function renderAccordion(list, query){
       const sess = AUTH.current();
-      results.hidden = true;
+      results.hidden   = true;
       accordion.hidden = false;
-      chipsWrap.style.display = expandedGroup ? '' : 'none'; // hide chips until a group is open
+      chipsWrap.style.display = expandedGroup ? '' : 'none';
 
-      // Build groups
       const groups = new Map();
       for (const r of list){
         const key = slug(r.type || 'other');
@@ -295,28 +337,37 @@
         groups.get(key).push(r);
       }
 
-      // Order keys
-      const ORDER = ['printer','medical','hospital','study','lab','restroom','vending','bikerack','other'];
+      const ORDER = ['printer','medical','hospital','study','lab',
+                     'restroom','vending','bikerack','other'];
       const present = Array.from(groups.keys());
       const ordered = [
         ...ORDER.filter(k => present.includes(k)),
-        ...present.filter(k => !ORDER.includes(k)).sort((a,b)=> labelFor(a).localeCompare(labelFor(b), undefined, {sensitivity:'base'}))
+        ...present.filter(k => !ORDER.includes(k))
+                 .sort((a,b)=> labelFor(a).localeCompare(
+                      labelFor(b), undefined, {sensitivity:'base'}))
       ];
 
-      // Count summary
-      const total = list.length;
+      const total      = list.length;
       const groupCount = ordered.length;
-      if(!total){count.textContent='0 results';accordion.innerHTML='';empty.hidden=false;return;}
+      if(!total){
+        count.textContent='0 results';
+        accordion.innerHTML='';
+        empty.hidden=false;
+        return;
+      }
       empty.hidden=true;
-      count.textContent = `${total} result${total>1?'s':''} • ${groupCount} categor${groupCount>1?'ies':'y'}`;
+      count.textContent =
+        `${total} result${total>1?'s':''} • ${groupCount} categor` +
+        `${groupCount>1?'ies':'y'}`;
 
-      // Render accordion
       accordion.innerHTML = ordered.map(key=>{
-        const items = groups.get(key).slice().sort((a,b)=> a.name.localeCompare(b.name));
+        const items = groups.get(key).slice()
+          .sort((a,b)=> a.name.localeCompare(b.name));
         const open = expandedGroup === key;
         return `
           <section class="acc-section" data-key="${key}">
-            <button class="acc-header" type="button" aria-expanded="${open?'true':'false'}">
+            <button class="acc-header" type="button"
+                    aria-expanded="${open?'true':'false'}">
               <span class="acc-title">${escapeHtml(labelFor(key))}</span>
               <span class="acc-count">${items.length}</span>
               <span class="acc-caret" aria-hidden="true">▾</span>
@@ -329,22 +380,19 @@
           </section>`;
       }).join('');
 
-      // Wire header clicks (accordion behavior)
       accordion.querySelectorAll('.acc-header').forEach(btn=>{
         btn.addEventListener('click', ()=>{
           const sec = btn.closest('.acc-section');
           const key = sec.getAttribute('data-key');
           if (expandedGroup === key){
-            // collapse all
             expandedGroup = null;
-            activeChip = null;
+            activeChip    = null;
             buildChips();
             renderAccordion(filterData(q.value.trim()), q.value.trim());
             return;
           }
-          // expand this, collapse others
           expandedGroup = key;
-          activeChip = key;
+          activeChip    = key;
           buildChips();
           renderAccordion(filterData(q.value.trim()), q.value.trim());
           sec.scrollIntoView({behavior:'smooth', block:'start'});
@@ -353,7 +401,7 @@
     }
 
     function render(list,query){
-      clearViews(); // ensure we never leave stale content behind
+      clearViews();
       try{
         if (safeGroupedOn()) renderAccordion(list, query);
         else renderFlat(list, query);
@@ -363,94 +411,85 @@
       }
     }
 
-    function debounce(fn,ms=120){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
-    const doSearch=debounce(()=>{render(filterData(q.value.trim()),q.value.trim());});
+    function debounce(fn,ms=120){
+      let t;
+      return(...a)=>{
+        clearTimeout(t);
+        t=setTimeout(()=>fn(...a),ms);
+      };
+    }
+    const doSearch=debounce(()=>{
+      render(filterData(q.value.trim()),q.value.trim());
+    });
 
-    // Events
     q.addEventListener('input',doSearch);
     clearBtn.addEventListener('click',()=>{
-      q.value=''; q.focus();
-      setMode(safeGroupedOn()); // resets states and re-renders in current mode
+      q.value='';
+      q.focus();
+      setMode(safeGroupedOn());
     });
     window.addEventListener('keydown',e=>{
-      if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}
-      if(e.key==='Escape'){ q.value=''; setMode(safeGroupedOn()); q.blur(); }
+      if(e.key==='/'&&document.activeElement!==q){
+        e.preventDefault();
+        q.focus();
+      }
+      if(e.key==='Escape'){
+        q.value='';
+        setMode(safeGroupedOn());
+        q.blur();
+      }
     });
-    if (groupedToggle) groupedToggle.addEventListener('change', ()=>{
-      setMode(groupedToggle.checked);
-    });
+    if (groupedToggle)
+      groupedToggle.addEventListener('change', ()=>{
+        setMode(groupedToggle.checked);
+      });
     openNow.addEventListener('change', ()=> doSearch());
 
-    // Favorites + Share (delegated; works in both modes)
+    // Favorites + share actions (delegated)
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
 
       const action = btn.getAttribute('data-action');
-      const id = btn.getAttribute('data-id');
+      const id     = btn.getAttribute('data-id');
 
-      // Favorite toggle (existing behavior)
       if (action === 'fav') {
         const sess = AUTH.current();
         if (!sess) { window.location.href = 'login.html'; return; }
         const nowFav = FAVS.toggle(sess.email, id);
-        const isFav = nowFav.includes(String(id));
+        const isFav  = nowFav.includes(String(id));
         btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
         btn.textContent = isFav ? '★ Favorited' : '☆ Favorite';
         return;
       }
 
-      // Share resource link
       if (action === 'share-resource') {
-        const base = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+        const base = window.location.origin +
+          window.location.pathname.replace(/[^/]*$/, '');
         const url  = base + 'resource.html?id=' + encodeURIComponent(id);
         copyLinkToClipboard(url, 'Resource link copied to clipboard.');
         return;
       }
 
-      // Share directions link
       if (action === 'share-location') {
         const res = DATA.find(r => String(r.id) === String(id));
         if (!res) return;
         const mapsUrl = 'https://www.google.com/maps/search/' +
-          encodeURIComponent(res.name + ' ' + res.building + ' Colorado State University');
+          encodeURIComponent(res.name + ' ' + res.building +
+                             ' Colorado State University');
         copyLinkToClipboard(mapsUrl, 'Directions link copied to clipboard.');
         return;
       }
     });
 
-    // Init
     async function init(){
-      const res=await fetch(DATA_URL,{cache:'no-store'});
-      DATA=await res.json();
+      const res = await fetch(DATA_URL,{cache:'no-store'});
+      DATA      = await res.json();
       buildTypeMap();
       buildChips();
-      setMode(true); // start grouped by default
+      setMode(true); // grouped by default
     }
     init();
-  </script>
-
-  <!-- THEME INLINE -->
-  <script>
-    (function(){
-      const KEY = 'rf:theme';
-      const ROOT = document.documentElement;
-      const btn  = document.getElementById('themeToggle');
-
-      function apply(theme){
-        const t = (theme === 'dark') ? 'dark' : 'light';
-        ROOT.setAttribute('data-theme', t);
-        localStorage.setItem(KEY, t);
-        if (btn){
-          const dark = t === 'dark';
-          btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
-          btn.title = dark ? 'Switch to light mode' : 'Switch to dark mode';
-          btn.textContent = dark ? '☀️' : '🌙';
-        }
-      }
-      apply((localStorage.getItem(KEY) || 'light').toLowerCase());
-      if (btn) btn.addEventListener('click', () => apply(ROOT.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
-    })();
   </script>
 </body>
 </html>

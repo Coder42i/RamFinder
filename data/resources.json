@@ -73,7 +73,8 @@
         "open": "08:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Accessible restroom with wider stall and grab bars; nearby accessible route in the building."
   },
   {
     "id": "3",
@@ -223,7 +224,8 @@
       "Sun": {
         "closed": true
       }
-    }
+    },
+    "accessibility": "Lab has an accessible entrance; adjustable-height workspaces may be available. Ask staff for assistance."
   },
   {
     "id": "7",
@@ -337,7 +339,8 @@
         "open": "10:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Wheelchair accessible entrance; elevators and accessible study areas available."
   },
   {
     "id": "10",
@@ -565,7 +568,8 @@
         "open": "10:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Wheelchair accessible entrance; elevators and accessible study areas available."
   },
   {
     "id": "16",
@@ -715,7 +719,8 @@
       "Sun": {
         "closed": true
       }
-    }
+    },
+    "accessibility": "Lab has an accessible entrance; adjustable-height workspaces may be available. Ask staff for assistance."
   },
   {
     "id": "20",
@@ -751,7 +756,8 @@
       "Sun": {
         "closed": true
       }
-    }
+    },
+    "accessibility": "Lab has an accessible entrance; adjustable-height workspaces may be available. Ask staff for assistance."
   },
   {
     "id": "21",
@@ -789,7 +795,8 @@
         "open": "08:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Accessible restroom with wider stall and grab bars; nearby accessible route in the building."
   },
   {
     "id": "22",
@@ -865,7 +872,8 @@
         "open": "08:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Accessible restroom with wider stall and grab bars; nearby accessible route in the building."
   },
   {
     "id": "24",
@@ -941,7 +949,8 @@
         "open": "10:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Wheelchair accessible entrance; elevators and accessible study areas available."
   },
   {
     "id": "26",
@@ -1167,7 +1176,8 @@
       "Sun": {
         "closed": true
       }
-    }
+    },
+    "accessibility": "Lab has an accessible entrance; adjustable-height workspaces may be available. Ask staff for assistance."
   },
   {
     "id": "32",
@@ -1205,7 +1215,8 @@
         "open": "08:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Accessible restroom with wider stall and grab bars; nearby accessible route in the building."
   },
   {
     "id": "33",
@@ -1585,7 +1596,8 @@
         "open": "10:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Wheelchair accessible entrance; elevators and accessible study areas available."
   },
   {
     "id": "43",
@@ -1851,7 +1863,8 @@
         "open": "08:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Accessible restroom with wider stall and grab bars; nearby accessible route in the building."
   },
   {
     "id": "50",
@@ -1887,7 +1900,8 @@
       "Sun": {
         "closed": true
       }
-    }
+    },
+    "accessibility": "Lab has an accessible entrance; adjustable-height workspaces may be available. Ask staff for assistance."
   },
   {
     "id": "51",
@@ -2001,7 +2015,8 @@
         "open": "10:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Wheelchair accessible entrance; elevators and accessible study areas available."
   },
   {
     "id": "54",
@@ -2075,7 +2090,8 @@
       "Sun": {
         "closed": true
       }
-    }
+    },
+    "accessibility": "Lab has an accessible entrance; adjustable-height workspaces may be available. Ask staff for assistance."
   },
   {
     "id": "56",
@@ -2417,7 +2433,8 @@
         "open": "10:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Wheelchair accessible entrance; elevators and accessible study areas available."
   },
   {
     "id": "65",
@@ -2907,7 +2924,8 @@
         "open": "10:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Wheelchair accessible entrance; elevators and accessible study areas available."
   },
   {
     "id": "78",
@@ -3021,7 +3039,8 @@
         "open": "10:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Wheelchair accessible entrance; elevators and accessible study areas available."
   },
   {
     "id": "81",
@@ -3556,7 +3575,8 @@
         "open": "08:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Accessible restroom with wider stall and grab bars; nearby accessible route in the building."
   },
   {
     "id": "95",
@@ -4012,7 +4032,8 @@
         "open": "08:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Accessible restroom with wider stall and grab bars; nearby accessible route in the building."
   },
   {
     "id": "107",
@@ -4240,7 +4261,8 @@
         "open": "10:00",
         "close": "22:00"
       }
-    }
+    },
+    "accessibility": "Wheelchair accessible entrance; elevators and accessible study areas available."
   },
   {
     "id": "113",
