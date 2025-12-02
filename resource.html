@@ -106,6 +106,21 @@
       return `<button class="btn" id="favBtn" data-id="${esc(id)}" aria-pressed="${pressed}" ${disabled}>${label}</button>`;
     }
 
+    // NEW: shared copy helper
+    async function copyLinkToClipboard(url, message){
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+          alert(message || 'Link copied to clipboard.');
+        } else {
+          window.prompt('Copy this link:', url);
+        }
+      } catch (e) {
+        console.error('Copy failed', e);
+        window.prompt('Copy this link:', url);
+      }
+    }
+
     async function init(){
       const detail = document.getElementById('detail');
       const nf = document.getElementById('notfound');
@@ -148,7 +163,25 @@
           ${hoursTable(item.hours)}
 
           <div class="actions" style="margin-top:1rem; gap:.5rem; flex-wrap:wrap">
-            <a class="btn" href="https://www.google.com/maps/search/${mapQ}" target="_blank" rel="noopener">Directions</a>
+            <a class="btn" id="directionsLink" href="https://www.google.com/maps/search/${mapQ}" target="_blank" rel="noopener">Directions</a>
+
+            <!-- New share buttons -->
+            <button
+              class="btn icon-btn"
+              type="button"
+              id="shareResBtn"
+              title="Copy link to this resource"
+              aria-label="Copy link to this resource"
+            >🔗</button>
+
+            <button
+              class="btn icon-btn"
+              type="button"
+              id="shareLocBtn"
+              title="Copy directions link"
+              aria-label="Copy directions link"
+            >📍</button>
+
             ${favButtonHTML(!!sess, isFav, item.id)}
             <a class="btn secondary" href="index.html">Back to Search</a>
           </div>
@@ -165,6 +198,23 @@
           const fav = nowFav.includes(String(item.id));
           favBtn.setAttribute('aria-pressed', fav ? 'true' : 'false');
           favBtn.textContent = fav ? '★ Favorited' : '☆ Favorite';
+        });
+      }
+
+      // Share buttons
+      const shareResBtn = document.getElementById('shareResBtn');
+      const shareLocBtn = document.getElementById('shareLocBtn');
+      const directionsLink = document.getElementById('directionsLink');
+
+      if (shareResBtn) {
+        shareResBtn.addEventListener('click', () => {
+          copyLinkToClipboard(window.location.href, 'Resource link copied to clipboard.');
+        });
+      }
+
+      if (shareLocBtn && directionsLink) {
+        shareLocBtn.addEventListener('click', () => {
+          copyLinkToClipboard(directionsLink.href, 'Directions link copied to clipboard.');
         });
       }
     }

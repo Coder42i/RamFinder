@@ -40,3 +40,6 @@ FA25/cis575/knime-workspace/.*
 
 # Temp
 **/~$*.*
+
+venv/
+.venv/

@@ -196,6 +196,21 @@
       return `<button class="btn" data-action="fav" data-id="${id}" aria-pressed="${pressed}" ${disabled}>${label}</button>`;
     }
 
+    // NEW: helper to copy links to clipboard
+    async function copyLinkToClipboard(url, message){
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+          alert(message || 'Link copied to clipboard.');
+        } else {
+          window.prompt('Copy this link:', url);
+        }
+      } catch (e) {
+        console.error('Copy failed', e);
+        window.prompt('Copy this link:', url);
+      }
+    }
+
     function cardHTML(r, query, sess){
       const open=isOpenNow(r);
       const isFav = !!(sess && FAVS.has(sess.email, r.id));
@@ -209,6 +224,26 @@
           <div class="actions">
             <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
             <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a>
+
+            <!-- New share buttons -->
+            <button
+              class="btn icon-btn"
+              type="button"
+              data-action="share-resource"
+              data-id="${r.id}"
+              title="Copy link to this resource"
+              aria-label="Copy link to this resource"
+            >🔗</button>
+
+            <button
+              class="btn icon-btn"
+              type="button"
+              data-action="share-location"
+              data-id="${r.id}"
+              title="Copy directions link"
+              aria-label="Copy directions link"
+            >📍</button>
+
             ${favButtonHTML(!!sess, isFav, r.id)}
           </div>
         </article>`;
@@ -346,17 +381,42 @@
     });
     openNow.addEventListener('change', ()=> doSearch());
 
-    // Favorites (delegated; works in both modes)
+    // Favorites + Share (delegated; works in both modes)
     document.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-action="fav"]');
+      const btn = e.target.closest('button[data-action]');
       if (!btn) return;
-      const sess = AUTH.current();
-      if (!sess) { window.location.href = 'login.html'; return; }
+
+      const action = btn.getAttribute('data-action');
       const id = btn.getAttribute('data-id');
-      const nowFav = FAVS.toggle(sess.email, id);
-      const isFav = nowFav.includes(String(id));
-      btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
-      btn.textContent = isFav ? '★ Favorited' : '☆ Favorite';
+
+      // Favorite toggle (existing behavior)
+      if (action === 'fav') {
+        const sess = AUTH.current();
+        if (!sess) { window.location.href = 'login.html'; return; }
+        const nowFav = FAVS.toggle(sess.email, id);
+        const isFav = nowFav.includes(String(id));
+        btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+        btn.textContent = isFav ? '★ Favorited' : '☆ Favorite';
+        return;
+      }
+
+      // Share resource link
+      if (action === 'share-resource') {
+        const base = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+        const url  = base + 'resource.html?id=' + encodeURIComponent(id);
+        copyLinkToClipboard(url, 'Resource link copied to clipboard.');
+        return;
+      }
+
+      // Share directions link
+      if (action === 'share-location') {
+        const res = DATA.find(r => String(r.id) === String(id));
+        if (!res) return;
+        const mapsUrl = 'https://www.google.com/maps/search/' +
+          encodeURIComponent(res.name + ' ' + res.building + ' Colorado State University');
+        copyLinkToClipboard(mapsUrl, 'Directions link copied to clipboard.');
+        return;
+      }
     });
 
     // Init

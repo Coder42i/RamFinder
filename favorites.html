@@ -67,6 +67,21 @@
     }
     function escapeHtml(str){return (str+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+    // NEW: shared copy helper
+    async function copyLinkToClipboard(url, message){
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+          alert(message || 'Link copied to clipboard.');
+        } else {
+          window.prompt('Copy this link:', url);
+        }
+      } catch (e) {
+        console.error('Copy failed', e);
+        window.prompt('Copy this link:', url);
+      }
+    }
+
     async function renderFavs(){
       const sess = AUTH.current();
       if (!sess) return;
@@ -89,6 +104,26 @@
           <div class="actions">
             <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
             <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a>
+
+            <!-- New share buttons -->
+            <button
+              class="btn icon-btn"
+              type="button"
+              data-action="share-resource"
+              data-id="${r.id}"
+              title="Copy link to this resource"
+              aria-label="Copy link to this resource"
+            >🔗</button>
+
+            <button
+              class="btn icon-btn"
+              type="button"
+              data-action="share-location"
+              data-id="${r.id}"
+              title="Copy directions link"
+              aria-label="Copy directions link"
+            >📍</button>
+
             <button class="btn" data-action="unfav" data-id="${r.id}">Remove</button>
           </div>
         `;
@@ -96,11 +131,33 @@
       }
 
       wrap.addEventListener('click', (e) => {
-        const btn = e.target.closest('button[data-action="unfav"]');
+        const btn = e.target.closest('button[data-action]');
         if (!btn) return;
+
+        const action = btn.getAttribute('data-action');
         const id = btn.getAttribute('data-id');
-        FAVS.remove(sess.email, id);
-        renderFavs(); // re-render
+
+        if (action === 'unfav') {
+          FAVS.remove(sess.email, id);
+          renderFavs(); // re-render
+          return;
+        }
+
+        if (action === 'share-resource') {
+          const base = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+          const url  = base + 'resource.html?id=' + encodeURIComponent(id);
+          copyLinkToClipboard(url, 'Resource link copied to clipboard.');
+          return;
+        }
+
+        if (action === 'share-location') {
+          const mapsLink = btn
+            .closest('.actions')
+            .querySelector('a[href^="https://www.google.com/maps/search"]');
+          if (!mapsLink) return;
+          copyLinkToClipboard(mapsLink.href, 'Directions link copied to clipboard.');
+          return;
+        }
       });
     }
 
