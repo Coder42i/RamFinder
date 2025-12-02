@@ -73,6 +73,9 @@
     const qs = new URLSearchParams(location.search);
     const RESOURCE_ID = (qs.get('id') || '').trim();
 
+    // CHANGE THIS to whatever address should receive issue reports / feedback
+    const REPORT_EMAIL = 'ram-finder-admin@colostate.edu';
+
     function esc(s){ return (s ?? '').toString()
       .replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -106,7 +109,7 @@
       return `<button class="btn" id="favBtn" data-id="${esc(id)}" aria-pressed="${pressed}" ${disabled}>${label}</button>`;
     }
 
-    // NEW: shared copy helper
+    // Shared copy helper (used by share buttons)
     async function copyLinkToClipboard(url, message){
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -165,7 +168,7 @@
           <div class="actions" style="margin-top:1rem; gap:.5rem; flex-wrap:wrap">
             <a class="btn" id="directionsLink" href="https://www.google.com/maps/search/${mapQ}" target="_blank" rel="noopener">Directions</a>
 
-            <!-- New share buttons -->
+            <!-- Share buttons -->
             <button
               class="btn icon-btn"
               type="button"
@@ -181,6 +184,40 @@
               title="Copy directions link"
               aria-label="Copy directions link"
             >📍</button>
+
+            <!-- NEW: Feedback dropdown (Report Issue / Provide Feedback) -->
+            <details class="feedback-menu" style="position:relative;">
+              <summary
+                class="btn"
+                title="Report an issue or provide feedback"
+                aria-label="Report an issue or provide feedback"
+                style="list-style:none; cursor:pointer;"
+              >
+                Feedback ▾
+              </summary>
+              <div
+                class="feedback-menu-panel"
+                style="position:absolute; z-index:10; margin-top:4px; padding:6px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); display:flex; flex-direction:column; gap:4px; min-width:180px;"
+              >
+                <button
+                  class="btn"
+                  type="button"
+                  id="reportIssueBtn"
+                  title="Report an issue with this resource"
+                  aria-label="Report an issue with this resource"
+                  style="width:100%; text-align:left;"
+                >Report Issue</button>
+
+                <button
+                  class="btn"
+                  type="button"
+                  id="feedbackBtn"
+                  title="Provide general feedback about this resource"
+                  aria-label="Provide feedback about this resource"
+                  style="width:100%; text-align:left;"
+                >Provide Feedback</button>
+              </div>
+            </details>
 
             ${favButtonHTML(!!sess, isFav, item.id)}
             <a class="btn secondary" href="index.html">Back to Search</a>
@@ -215,6 +252,48 @@
       if (shareLocBtn && directionsLink) {
         shareLocBtn.addEventListener('click', () => {
           copyLinkToClipboard(directionsLink.href, 'Directions link copied to clipboard.');
+        });
+      }
+
+      // Feedback dropdown: Report Issue
+      const reportIssueBtn = document.getElementById('reportIssueBtn');
+      if (reportIssueBtn) {
+        reportIssueBtn.addEventListener('click', () => {
+          const subject = `Issue: ${item.name}`;
+          const bodyLines = [
+            'Hi RamFinder team,',
+            '',
+            'I noticed an issue with this resource:',
+            `- Name: ${item.name}`,
+            `- Building: ${item.building}${item.room ? ', ' + item.room : ''}`,
+            '',
+            '[Describe the issue here]',
+            ''
+          ];
+          const body = bodyLines.join('\n');
+          const mailto = `mailto:${encodeURIComponent(REPORT_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          window.location.href = mailto;
+        });
+      }
+
+      // Feedback dropdown: Provide Feedback
+      const feedbackBtn = document.getElementById('feedbackBtn');
+      if (feedbackBtn) {
+        feedbackBtn.addEventListener('click', () => {
+          const subject = `Feedback: ${item.name}`;
+          const bodyLines = [
+            'Hi RamFinder team,',
+            '',
+            'I would like to provide some feedback about this resource:',
+            `- Name: ${item.name}`,
+            `- Building: ${item.building}${item.room ? ', ' + item.room : ''}`,
+            '',
+            '[Enter feedback here]',
+            ''
+          ];
+          const body = bodyLines.join('\n');
+          const mailto = `mailto:${encodeURIComponent(REPORT_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          window.location.href = mailto;
         });
       }
     }
