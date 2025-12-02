@@ -138,14 +138,12 @@ def _normalize_hours(hours):
     days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     out = {}
     if not isinstance(hours, dict):
-        # Everything closed by default if malformed
         return {d: {"closed": True} for d in days}
     for d in days:
         val = hours.get(d)
         if not isinstance(val, dict):
             out[d] = {"closed": True}
         else:
-            # Keep open/close if present, default closed flag if missing
             closed = bool(val.get("closed", False))
             entry = {
                 "open":  val.get("open", "00:00"),
@@ -222,8 +220,7 @@ def get_admins():
 
 @app.post("/api/admins")
 def add_admin():
-    # For this class/demo app we don't enforce admin auth here,
-    # because the frontend uses this to bootstrap admins.
+    # For this class/demo app we don't enforce admin auth here.
     payload = request.get_json(silent=True) or {}
     email = _norm_email(payload.get("email"))
     if not EMAIL_RE.match(email or ""):
@@ -245,7 +242,6 @@ def add_admin():
 
 @app.delete("/api/admins")
 def delete_admin():
-    # Optional: enforce that the caller is an admin
     if not _is_admin_from_request():
         return jsonify({"error": "Forbidden"}), 403
 
@@ -293,9 +289,11 @@ def create_resource():
         "notes": notes,
         "hours": _normalize_hours(hours_raw),
     }
-    # Optional: if accessibility was passed through from admin UI
+    # Optional fields
     if "accessibility" in payload:
         resource["accessibility"] = payload["accessibility"]
+    if "out_of_service" in payload:
+        resource["out_of_service"] = bool(payload["out_of_service"])
 
     items.append(resource)
     _save_resources(items)
@@ -332,12 +330,13 @@ def update_resource(rid):
     if "hours" in payload:
         found["hours"] = _normalize_hours(payload.get("hours") or {})
     if "accessibility" in payload:
-        # allow clearing if empty string
         acc = payload.get("accessibility")
         if acc:
-          found["accessibility"] = acc
+            found["accessibility"] = acc
         elif "accessibility" in found:
-          del found["accessibility"]
+            del found["accessibility"]
+    if "out_of_service" in payload:
+        found["out_of_service"] = bool(payload.get("out_of_service"))
 
     _save_resources(items)
     return jsonify(found)

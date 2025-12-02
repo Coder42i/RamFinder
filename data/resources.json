@@ -3162,35 +3162,43 @@
     "room": "ST101",
     "notes": "Bottle filler and fountain.",
     "hours": {
+      "Sun": {
+        "open": "08:00",
+        "close": "22:00",
+        "closed": false
+      },
       "Mon": {
         "open": "07:00",
-        "close": "23:00"
+        "close": "23:00",
+        "closed": false
       },
       "Tue": {
         "open": "07:00",
-        "close": "23:00"
+        "close": "23:00",
+        "closed": false
       },
       "Wed": {
         "open": "07:00",
-        "close": "23:00"
+        "close": "23:00",
+        "closed": false
       },
       "Thu": {
         "open": "07:00",
-        "close": "23:00"
+        "close": "23:00",
+        "closed": false
       },
       "Fri": {
         "open": "07:00",
-        "close": "23:00"
+        "close": "23:00",
+        "closed": false
       },
       "Sat": {
         "open": "08:00",
-        "close": "22:00"
-      },
-      "Sun": {
-        "open": "08:00",
-        "close": "22:00"
+        "close": "22:00",
+        "closed": false
       }
-    }
+    },
+    "out_of_service": true
   },
   {
     "id": "85",
@@ -3499,7 +3507,8 @@
         "close": "23:59",
         "closed": false
       }
-    }
+    },
+    "out_of_service": true
   },
   {
     "id": "93",

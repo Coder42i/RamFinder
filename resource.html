@@ -15,15 +15,11 @@
         <div class="subtitle">See hours, status, location, and actions for this resource.</div>
         <nav class="breadcrumb"><a href="index.html">Home</a> / <span>Details</span></nav>
       </div>
-
-      <div class="header-actions">
-        <div id="userbox" class="badge">Guest</div>
-        <a id="favLink" class="btn" href="favorites.html" style="display:none">Favorites</a>
-        <a id="loginLink" class="btn" href="login.html">Log in</a>
-        <button id="logoutBtn" class="btn" style="display:none">Log out</button>
-        <a id="adminLink" class="btn" href="admin.html" style="display:none">Admin</a>
-        <button id="themeToggle" class="btn secondary icon-btn" type="button" title="Switch to dark mode">🌙</button>
-      </div>
+      <div id="userbox" class="badge">Guest</div>
+      <a id="favLink" class="btn" href="favorites.html" style="display:none">Favorites</a>
+      <a id="loginLink" class="btn" href="login.html">Log in</a>
+      <button id="logoutBtn" class="btn" style="display:none">Log out</button>
+      <a id="adminLink" class="btn" href="admin.html" style="display:none">Admin</a>
     </header>
 
     <section id="detail" class="results" aria-live="polite" aria-atomic="true"></section>
@@ -55,10 +51,18 @@
         loginLink.style.display = 'none';
         logoutBtn.style.display  = 'inline-block';
         favLink.style.display    = 'inline-block';
-        logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
-        if (sess.admin) adminLink.style.display = 'inline-block';
+        logoutBtn.addEventListener('click', () => {
+          AUTH.logout();
+          window.location.href = 'index.html';
+        });
+        if (sess.admin && adminLink) adminLink.style.display = 'inline-block';
+        else if (adminLink) adminLink.style.display = 'none';
       } else {
         userbox.textContent = 'Guest';
+        loginLink.style.display = 'inline-block';
+        logoutBtn.style.display  = 'none';
+        favLink.style.display    = 'none';
+        if (adminLink) adminLink.style.display = 'none';
       }
     })();
   </script>
@@ -69,8 +73,6 @@
 
     const qs = new URLSearchParams(location.search);
     const RESOURCE_ID = (qs.get('id') || '').trim();
-
-    const REPORT_EMAIL = 'ram-finder-admin@colostate.edu';
 
     function esc(s){ return (s ?? '').toString()
       .replace(/&/g,'&amp;').replace(/</g,'&lt;')
@@ -98,13 +100,6 @@
       return `<table class="table hours"><thead><tr><th>Day</th><th>Hours</th></tr></thead><tbody>${rows}</tbody></table>`;
     }
 
-    function favButtonHTML(signedIn, isFav, id){
-      const label = isFav ? '★ Favorited' : '☆ Favorite';
-      const pressed = isFav ? 'true' : 'false';
-      const disabled = signedIn ? '' : 'disabled title="Log in to use favorites"';
-      return `<button class="btn" id="favBtn" data-id="${esc(id)}" aria-pressed="${pressed}" ${disabled}>${label}</button>`;
-    }
-
     async function copyLinkToClipboard(url, message){
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -121,104 +116,123 @@
 
     async function init(){
       const detail = document.getElementById('detail');
-      const nf = document.getElementById('notfound');
-
+      const notfound = document.getElementById('notfound');
       if (!RESOURCE_ID){
-        detail.hidden = true; nf.hidden = false; return;
+        notfound.hidden = false;
+        return;
       }
 
-      let data;
-      try{
-        const res = await fetch(DATA_URL, { cache:'no-store' });
-        data = await res.json();
-      }catch(e){
-        detail.hidden = true; nf.hidden = false; return;
-      }
+      const res = await fetch(DATA_URL, {cache:'no-store'});
+      const list = await res.json();
+      const item = list.find(r => String(r.id) === String(RESOURCE_ID));
 
-      const item = (data || []).find(r => String(r.id) === String(RESOURCE_ID));
-      if (!item){ detail.hidden = true; nf.hidden = false; return; }
+      if (!item){
+        notfound.hidden = false;
+        return;
+      }
 
       const open = isOpenNow(item);
+      const out  = !!item.out_of_service;
+      const statusClass = out ? 'closed' : (open ? 'open' : 'closed');
+      const statusText  = out ? 'Out of Service' : (open ? 'Open Now' : 'Closed');
+      const mapQ = encodeURIComponent(item.name+' '+item.building+' Colorado State University');
+
       const sess = AUTH.current();
       const isFav = !!(sess && FAVS.has(sess.email, item.id));
 
-      const mapQ = encodeURIComponent(`${item.name} ${item.building} Colorado State University`);
       detail.innerHTML = `
         <article class="card">
-          <div class="badge">${esc(item.type[0].toUpperCase()+item.type.slice(1))}</div>
-          <h2 class="name" style="margin-top:.25rem">${esc(item.name)}</h2>
-
-          <div class="row"><span class="dot"></span>
+          <div class="badge">${esc(item.type || 'Resource')}</div>
+          <h2 class="name">${esc(item.name)}</h2>
+          <div class="row">
+            <span class="dot"></span>
             <span>${esc(item.building)}${item.room ? ', '+esc(item.room) : ''}</span>
           </div>
 
-          <div class="row" style="margin:.25rem 0 .75rem 0">
-            <strong class="${open?'open':'closed'}">${open ? 'Open Now' : 'Closed'}</strong>
+          <div class="row" style="margin:.25rem 0 .25rem 0">
+            <strong class="${statusClass}">${statusText}</strong>
           </div>
 
-          ${item.notes ? `<p style="margin:.25rem 0 .75rem 0">${esc(item.notes)}</p>` : ''}
+          ${out ? `<p class="closed" style="margin:0 0 .75rem 0; font-weight:600;">
+            This resource is currently marked as Out of Service by the RamFinder team.
+          </p>` : ''}
 
-          ${item.accessibility ? `<p class="row" style="margin:.25rem 0 .75rem 0"><strong>Accessibility:</strong> ♿ ${esc(item.accessibility)}</p>` : ''}
+          ${item.accessibility
+            ? `<p style="margin:.25rem 0 .75rem 0">♿ ${esc(item.accessibility)}</p>`
+            : ''}
 
+          ${item.notes ? `<p style="margin:.25rem 0 1rem 0">${esc(item.notes)}</p>` : ''}
+
+          <h3>Hours</h3>
           ${hoursTable(item.hours)}
 
-          <div class="actions" style="margin-top:1rem; gap:.5rem; flex-wrap:wrap">
-            <a class="btn" id="directionsLink" href="https://www.google.com/maps/search/${mapQ}" target="_blank" rel="noopener">Directions</a>
+          <div class="actions" style="margin-top:1rem; flex-wrap:wrap; row-gap:6px">
+            <a class="btn"
+               href="https://www.google.com/maps/search/${mapQ}"
+               target="_blank">
+              Directions
+            </a>
 
-            <button
-              class="btn icon-btn"
-              type="button"
-              id="shareResBtn"
-              title="Copy link to this resource"
-              aria-label="Copy link to this resource"
-            >🔗</button>
+            <button class="btn icon-btn" type="button"
+                    id="shareResourceBtn"
+                    title="Copy link to this resource"
+                    aria-label="Copy link to this resource">🔗</button>
 
-            <button
-              class="btn icon-btn"
-              type="button"
-              id="shareLocBtn"
-              title="Copy directions link"
-              aria-label="Copy directions link"
-            >📍</button>
+            <button class="btn icon-btn" type="button"
+                    id="shareLocationBtn"
+                    title="Copy directions link"
+                    aria-label="Copy directions link">📍</button>
+
+            <button class="btn" id="favBtn"
+                    data-id="${item.id}"
+                    aria-pressed="${isFav?'true':'false'}">
+              ${isFav ? '★ Favorited' : '☆ Favorite'}
+            </button>
 
             <details class="feedback-menu" style="position:relative;">
               <summary
                 class="btn"
                 title="Report an issue or provide feedback"
                 aria-label="Report an issue or provide feedback"
-                style="list-style:none; cursor:pointer;"
-              >
+                style="list-style:none; cursor:pointer;">
                 Feedback ▾
               </summary>
               <div
                 class="feedback-menu-panel"
-                style="position:absolute; z-index:10; margin-top:4px; padding:6px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); display:flex; flex-direction:column; gap:4px; min-width:180px;"
-              >
-                <button
-                  class="btn"
-                  type="button"
-                  id="reportIssueBtn"
-                  title="Report an issue with this resource"
-                  aria-label="Report an issue with this resource"
-                  style="width:100%; text-align:left;"
-                >Report Issue</button>
-
-                <button
-                  class="btn"
-                  type="button"
-                  id="feedbackBtn"
-                  title="Provide general feedback about this resource"
-                  aria-label="Provide feedback about this resource"
-                  style="width:100%; text-align:left;"
-                >Provide Feedback</button>
+                style="position:absolute; z-index:10; margin-top:4px; padding:6px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); display:flex; flex-direction:column; gap:4px; min-width:200px;">
+                <button class="btn" type="button" id="reportIssueBtn" style="width:100%; text-align:left;">
+                  Report Issue
+                </button>
+                <button class="btn" type="button" id="feedbackBtn" style="width:100%; text-align:left;">
+                  Provide Feedback
+                </button>
               </div>
             </details>
 
-            ${favButtonHTML(!!sess, isFav, item.id)}
-            <a class="btn secondary" href="index.html">Back to Search</a>
+            <a class="btn secondary" href="index.html">Back to search</a>
           </div>
         </article>
       `;
+
+      const base = window.location.origin +
+        window.location.pathname.replace(/[^/]*$/, '');
+      const resourceUrl  = base + 'resource.html?id=' + encodeURIComponent(item.id);
+      const mapsUrl = 'https://www.google.com/maps/search/' +
+        encodeURIComponent(item.name + ' ' + item.building +
+                           ' Colorado State University');
+
+      const shareResourceBtn = document.getElementById('shareResourceBtn');
+      const shareLocationBtn = document.getElementById('shareLocationBtn');
+      if (shareResourceBtn) {
+        shareResourceBtn.addEventListener('click', () =>
+          copyLinkToClipboard(resourceUrl, 'Resource link copied to clipboard.')
+        );
+      }
+      if (shareLocationBtn) {
+        shareLocationBtn.addEventListener('click', () =>
+          copyLinkToClipboard(mapsUrl, 'Directions link copied to clipboard.')
+        );
+      }
 
       const favBtn = document.getElementById('favBtn');
       if (favBtn){
@@ -232,60 +246,34 @@
         });
       }
 
-      const shareResBtn = document.getElementById('shareResBtn');
-      const shareLocBtn = document.getElementById('shareLocBtn');
-      const directionsLink = document.getElementById('directionsLink');
-
-      if (shareResBtn) {
-        shareResBtn.addEventListener('click', () => {
-          copyLinkToClipboard(window.location.href, 'Resource link copied to clipboard.');
-        });
-      }
-
-      if (shareLocBtn && directionsLink) {
-        shareLocBtn.addEventListener('click', () => {
-          copyLinkToClipboard(directionsLink.href, 'Directions link copied to clipboard.');
-        });
-      }
-
       const reportIssueBtn = document.getElementById('reportIssueBtn');
-      if (reportIssueBtn) {
-        reportIssueBtn.addEventListener('click', () => {
-          const subject = `Issue: ${item.name}`;
-          const bodyLines = [
-            'Hi RamFinder team,',
-            '',
-            'I noticed an issue with this resource:',
-            `- Name: ${item.name}`,
-            `- Building: ${item.building}${item.room ? ', ' + item.room : ''}`,
-            '',
-            '[Describe the issue here]',
-            ''
-          ];
-          const body = bodyLines.join('\n');
-          const mailto = `mailto:${encodeURIComponent(REPORT_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-          window.location.href = mailto;
-        });
+      const feedbackBtn    = document.getElementById('feedbackBtn');
+
+      function openMail(kind){
+        const to = 'ram-finder-admin@colostate.edu';
+        const subject = `${kind}: ${item.name}`;
+        const bodyLines = [
+          'Hi RamFinder team,',
+          '',
+          `${kind} with this resource:`,
+          `- Name: ${item.name}`,
+          `- Building: ${item.building}`,
+          item.room ? `- Room: ${item.room}` : '',
+          '',
+          'Details:',
+          '',
+          '',
+        ].filter(Boolean);
+        const body = encodeURIComponent(bodyLines.join('\n'));
+        const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${body}`;
+        window.location.href = mailto;
       }
 
-      const feedbackBtn = document.getElementById('feedbackBtn');
+      if (reportIssueBtn) {
+        reportIssueBtn.addEventListener('click', () => openMail('Issue'));
+      }
       if (feedbackBtn) {
-        feedbackBtn.addEventListener('click', () => {
-          const subject = `Feedback: ${item.name}`;
-          const bodyLines = [
-            'Hi RamFinder team,',
-            '',
-            'I would like to provide some feedback about this resource:',
-            `- Name: ${item.name}`,
-            `- Building: ${item.building}${item.room ? ', ' + item.room : ''}`,
-            '',
-            '[Enter feedback here]',
-            ''
-          ];
-          const body = bodyLines.join('\n');
-          const mailto = `mailto:${encodeURIComponent(REPORT_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-          window.location.href = mailto;
-        });
+        feedbackBtn.addEventListener('click', () => openMail('Feedback'));
       }
     }
 

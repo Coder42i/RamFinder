@@ -8,7 +8,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Header: same pattern as other pages; theme button comes from theme.js -->
     <header>
       <div class="logo" aria-hidden="true">RF</div>
       <div>
@@ -51,9 +50,7 @@
       <span>Type <code class="kbd">/</code> to focus, <code class="kbd">Esc</code> to clear</span>
     </div>
 
-    <!-- Flat mode container -->
     <section class="results" id="results" aria-label="Search results"></section>
-    <!-- Grouped mode container -->
     <div id="accordion" class="group-accordion" aria-label="Grouped results"></div>
 
     <div id="empty" class="empty" hidden>No resources match your search.</div>
@@ -61,7 +58,6 @@
     <footer>
       <div>Tip: Click a category to expand it. Sign in to save favorites.</div>
 
-      <!-- Simple updates subscription form -->
       <form id="updatesForm" class="updates-form" novalidate
             style="margin-top:0.5rem; display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
         <label for="updatesEmail" class="sr-only">Email for updates</label>
@@ -76,13 +72,11 @@
     </footer>
   </div>
 
-  <!-- Shared assets -->
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
   <script src="assets/favs.js"></script>
   <script src="assets/theme.js"></script>
 
-  <!-- Header session controller -->
   <script>
     (function initHeader(){
       const sess      = AUTH.current();
@@ -113,7 +107,6 @@
     })();
   </script>
 
-  <!-- Search + favorites + share + accessibility + updates logic -->
   <script>
     const API_BASE = 'http://127.0.0.1:5050';
     const DATA_URL = 'data/resources.json';
@@ -254,7 +247,10 @@
     }
 
     function cardHTML(r, query, sess){
-      const open  = isOpenNow(r);
+      const open = isOpenNow(r);
+      const out  = !!r.out_of_service;
+      const statusClass = out ? 'closed' : (open ? 'open' : 'closed');
+      const statusText  = out ? 'Out of Service' : (open ? 'Open Now' : 'Closed');
       const isFav = !!(sess && FAVS.has(sess.email, r.id));
       const lbl   = labelFor(slug(r.type || 'other'));
       return `
@@ -271,9 +267,7 @@
             <span>${highlight(r.building+(r.room?', '+r.room:''),query)}</span>
           </div>
           <div class="row">
-            <strong class="${open?'open':'closed'}">
-              ${open?'Open Now':'Closed'}
-            </strong>
+            <strong class="${statusClass}">${statusText}</strong>
           </div>
           ${r.accessibility
             ? `<div class="row"><span>♿ ${highlight(r.accessibility, query)}</span></div>`
@@ -460,7 +454,6 @@
       });
     openNow.addEventListener('change', ()=> doSearch());
 
-    // Favorites + share actions (delegated)
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
@@ -502,7 +495,7 @@
       DATA      = await res.json();
       buildTypeMap();
       buildChips();
-      setMode(true); // grouped by default
+      setMode(true);
     }
     init();
 

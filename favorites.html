@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Favorites • RamFinder</title>
   <link rel="stylesheet" href="assets/styles.css" />
-<button id="themeToggle" class="btn secondary icon-btn" type="button" title="Switch to dark mode">🌙</button>
 </head>
 <body>
   <div class="container">
@@ -24,16 +23,23 @@
     </header>
 
     <section class="results" id="favList" aria-label="Favorites"></section>
-    <div id="empty" class="empty" hidden>No favorites yet. Go to the <a href="index.html">search</a> page and tap ☆ Favorite.</div>
+    <div id="empty" class="empty" hidden>You don’t have any favorites yet.</div>
+
+    <footer>
+      <div>Sign in on the main page to add favorites.</div>
+    </footer>
   </div>
 
   <script src="assets/store.js"></script>
   <script src="assets/auth.js"></script>
-<script src="assets/theme.js"></script>
   <script src="assets/favs.js"></script>
+  <script src="assets/theme.js"></script>
 
   <script>
-    (async function initHeader(){
+    const DATA_URL = 'data/resources.json';
+    const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    (function initHeader(){
       const sess = AUTH.current();
       const userbox   = document.getElementById('userbox');
       const loginLink = document.getElementById('loginLink');
@@ -46,148 +52,113 @@
         loginLink.style.display = 'none';
         logoutBtn.style.display  = 'inline-block';
         favLink.style.display    = 'inline-block';
-        logoutBtn.addEventListener('click', () => { AUTH.logout(); window.location.href = 'index.html'; });
-        if (sess.admin && adminLink) adminLink.style.display = 'inline-block'; else if (adminLink) adminLink.style.display = 'none';
+        logoutBtn.addEventListener('click', () => {
+          AUTH.logout();
+          window.location.href = 'index.html';
+        });
+        if (sess.admin && adminLink) adminLink.style.display = 'inline-block';
+        else if (adminLink) adminLink.style.display = 'none';
       } else {
-        window.location.href = 'login.html';
+        userbox.textContent = 'Guest';
+        loginLink.style.display = 'inline-block';
+        logoutBtn.style.display  = 'none';
+        favLink.style.display    = 'none';
+        if (adminLink) adminLink.style.display = 'none';
       }
     })();
-  </script>
 
-  <script>
-    const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     function isOpenNow(item, now=new Date()){
-      const slot = item.hours?.[DOW[now.getDay()]];
-      if(!slot || slot.closed) return false;
-      const [oh, om] = (slot.open||'00:00').split(':').map(Number);
-      const [ch, cm] = (slot.close||'00:00').split(':').map(Number);
-      const openM = oh*60+om, closeM = ch*60+cm, curM = now.getHours()*60+now.getMinutes();
-      return curM>=openM && curM<=closeM;
+      if (!item.hours) return false;
+      const slot = item.hours[DOW[now.getDay()]];
+      if (!slot || slot.closed) return false;
+      const [oh,om] = (slot.open||'00:00').split(':').map(Number);
+      const [ch,cm] = (slot.close||'00:00').split(':').map(Number);
+      const cur = now.getHours()*60 + now.getMinutes();
+      const openM = oh*60+om, closeM = ch*60+cm;
+      return cur >= openM && cur <= closeM;
     }
-    function escapeHtml(str){return (str+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-    async function copyLinkToClipboard(url, message){
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(url);
-          alert(message || 'Link copied to clipboard.');
-        } else {
-          window.prompt('Copy this link:', url);
-        }
-      } catch (e) {
-        console.error('Copy failed', e);
-        window.prompt('Copy this link:', url);
+    function esc(s){ return (s ?? '').toString()
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    async function initFavs(){
+      const listEl = document.getElementById('favList');
+      const empty  = document.getElementById('empty');
+      const sess   = AUTH.current();
+      if (!sess){
+        empty.hidden = false;
+        listEl.innerHTML = '<p>Please log in on the main page to manage favorites.</p>';
+        return;
       }
-    }
 
-    async function renderFavs(){
-      const sess = AUTH.current();
-      if (!sess) return;
-      const list = await FAVS.detailed(sess.email);
-      const wrap = document.getElementById('favList');
-      const empty = document.getElementById('empty');
-      wrap.innerHTML = '';
-      if (!list.length){ empty.hidden = false; wrap.hidden=true; return; }
-      empty.hidden = true; wrap.hidden=false;
+      const res = await fetch(DATA_URL, {cache:'no-store'});
+      const data = await res.json();
+      const favIds = FAVS.all(sess.email).map(String);
 
+      const list = data.filter(r => favIds.includes(String(r.id)))
+                       .sort((a,b) => (a.name||'').localeCompare(b.name||''));
+
+      if (!list.length){
+        empty.hidden = false;
+        listEl.innerHTML = '';
+        return;
+      }
+      empty.hidden = true;
+
+      listEl.innerHTML = '';
       for (const r of list){
         const open = isOpenNow(r);
+        const out  = !!r.out_of_service;
+        const statusClass = out ? 'closed' : (open ? 'open' : 'closed');
+        const statusText  = out ? 'Out of Service' : (open ? 'Open Now' : 'Closed');
+
         const card = document.createElement('article');
         card.className = 'card';
         card.innerHTML = `
-          <div class="badge">${escapeHtml(r.type[0].toUpperCase()+r.type.slice(1))}</div>
-          <div class="name"><a href="resource.html?id=${encodeURIComponent(r.id)}" style="color:inherit;text-decoration:none">${escapeHtml(r.name)}</a></div>
-          <div class="row"><span class="dot"></span><span>${escapeHtml(r.building+(r.room?', '+r.room:''))}</span></div>
-          <div class="row"><strong class="${open?'open':'closed'}">${open?'Open Now':'Closed'}</strong></div>
-          ${r.accessibility ? `<div class="row"><span>♿ ${escapeHtml(r.accessibility)}</span></div>` : ''}
+          <div class="badge">${esc(r.type || 'Resource')}</div>
+          <div class="name">
+            <a href="resource.html?id=${encodeURIComponent(r.id)}"
+               style="color:inherit;text-decoration:none">
+              ${esc(r.name)}
+            </a>
+          </div>
+          <div class="row">
+            <span class="dot"></span>
+            <span>${esc(r.building)}${r.room ? ', '+esc(r.room) : ''}</span>
+          </div>
+          <div class="row">
+            <strong class="${statusClass}">${statusText}</strong>
+          </div>
+          ${r.accessibility
+            ? `<div class="row"><span>♿ ${esc(r.accessibility)}</span></div>`
+            : ''}
           <div class="actions">
-            <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">Details</a>
-            <a class="btn" href="https://www.google.com/maps/search/${encodeURIComponent(r.name+' '+r.building+' Colorado State University')}" target="_blank">Directions</a>
-
-            <button
-              class="btn icon-btn"
-              type="button"
-              data-action="share-resource"
-              data-id="${r.id}"
-              title="Copy link to this resource"
-              aria-label="Copy link to this resource"
-            >🔗</button>
-
-            <button
-              class="btn icon-btn"
-              type="button"
-              data-action="share-location"
-              data-id="${r.id}"
-              title="Copy directions link"
-              aria-label="Copy directions link"
-            >📍</button>
-
-            <button class="btn" data-action="unfav" data-id="${r.id}">Remove</button>
+            <a class="btn" href="resource.html?id=${encodeURIComponent(r.id)}">
+              Details
+            </a>
+            <button class="btn" data-id="${r.id}">Remove</button>
           </div>
         `;
-        wrap.appendChild(card);
+        listEl.appendChild(card);
       }
 
-      wrap.addEventListener('click', (e) => {
-        const btn = e.target.closest('button[data-action]');
+      listEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-id]');
         if (!btn) return;
-
-        const action = btn.getAttribute('data-action');
         const id = btn.getAttribute('data-id');
-
-        if (action === 'unfav') {
-          FAVS.remove(sess.email, id);
-          renderFavs();
-          return;
-        }
-
-        if (action === 'share-resource') {
-          const base = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
-          const url  = base + 'resource.html?id=' + encodeURIComponent(id);
-          copyLinkToClipboard(url, 'Resource link copied to clipboard.');
-          return;
-        }
-
-        if (action === 'share-location') {
-          const mapsLink = btn
-            .closest('.actions')
-            .querySelector('a[href^="https://www.google.com/maps/search"]');
-          if (!mapsLink) return;
-          copyLinkToClipboard(mapsLink.href, 'Directions link copied to clipboard.');
-          return;
+        const nowFav = FAVS.toggle(sess.email, id);
+        const still = nowFav.includes(String(id));
+        if (!still){
+          btn.closest('.card').remove();
+          if (!listEl.querySelector('.card')){
+            empty.hidden = false;
+          }
         }
       });
     }
 
-    renderFavs();
+    initFavs();
   </script>
-<script>
-  (function(){
-    const KEY = 'rf:theme';
-    const ROOT = document.documentElement;
-    const btn  = document.getElementById('themeToggle');
-
-    function apply(theme){
-      const t = (theme === 'dark') ? 'dark' : 'light';
-      ROOT.setAttribute('data-theme', t);
-      localStorage.setItem(KEY, t);
-      if (btn){
-        const dark = t === 'dark';
-        btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
-        btn.title = dark ? 'Switch to light mode' : 'Switch to dark mode';
-        btn.textContent = dark ? '☀️' : '🌙';
-      }
-    }
-
-    apply((localStorage.getItem(KEY) || 'light').toLowerCase());
-
-    if (btn) {
-      btn.addEventListener('click', () => {
-        const next = (ROOT.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
-        apply(next);
-      });
-    }
-  })();
-</script>
 </body>
 </html>
