@@ -50,6 +50,12 @@
       <span>Type <code class="kbd">/</code> to focus, <code class="kbd">Esc</code> to clear</span>
     </div>
 
+    <!-- Announcements -->
+    <section id="announcements" class="card" aria-label="Announcements" hidden>
+      <h2 style="margin-top:0;">Announcements</h2>
+      <ul id="annList" style="padding-left:1.1rem; margin:0;"></ul>
+    </section>
+
     <section class="results" id="results" aria-label="Search results"></section>
     <div id="accordion" class="group-accordion" aria-label="Grouped results"></div>
 
@@ -495,7 +501,28 @@
       DATA      = await res.json();
       buildTypeMap();
       buildChips();
-      setMode(true);
+      setMode(true); // grouped by default
+
+      // Load announcements (best-effort; ignore if backend is down)
+      try {
+        const annRes = await fetch(`${API_BASE}/api/announcements`, {cache:'no-store'});
+        const anns   = await annRes.json();
+        const annSec = document.getElementById('announcements');
+        const annList= document.getElementById('annList');
+        if (Array.isArray(anns) && anns.length && annSec && annList) {
+          const top = anns.slice(0, 3);
+          annList.innerHTML = top.map(a => `
+            <li style="margin-bottom:0.35rem;">
+              <strong>${escapeHtml(a.title)}</strong>
+              ${a.created_at ? ` <span class="meta">(${escapeHtml(a.created_at)})</span>` : ''}
+              <div>${escapeHtml(a.body)}</div>
+            </li>
+          `).join('');
+          annSec.hidden = false;
+        }
+      } catch (err){
+        console.warn('Announcements not available:', err);
+      }
     }
     init();
 

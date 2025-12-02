@@ -1,7 +1,7 @@
 # app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os, json, re
+import os, json, re, datetime
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -14,6 +14,7 @@ USERS_FILE   = os.path.join(DATA_DIR, "users.json")
 ADM_FILE     = os.path.join(DATA_DIR, "admins.json")
 RES_FILE     = os.path.join(DATA_DIR, "resources.json")
 UPDATES_FILE = os.path.join(DATA_DIR, "updates.json")
+ANN_FILE     = os.path.join(DATA_DIR, "announcements.json")
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -37,6 +38,7 @@ def _ensure_files():
     _ensure_file(ADM_FILE, [])
     _ensure_file(RES_FILE, [])
     _ensure_file(UPDATES_FILE, [])
+    _ensure_file(ANN_FILE, [])
 
 
 def _read_json(path, default):
@@ -126,6 +128,33 @@ def _save_subscribers(emails):
     _write_json(UPDATES_FILE, clean)
 
 
+def _announcements():
+    """Return announcements, newest first."""
+    _ensure_files()
+    raw = _read_json(ANN_FILE, [])
+    if not isinstance(raw, list):
+        return []
+    return sorted(
+        raw,
+        key=lambda a: a.get("created_at") or "",
+        reverse=True
+    )
+
+
+def _save_announcements(items):
+    _write_json(ANN_FILE, items)
+
+
+def _next_announcement_id(items):
+    max_id = 0
+    for a in items:
+        try:
+            max_id = max(max_id, int(str(a.get("id"))))
+        except Exception:
+            continue
+    return str(max_id + 1)
+
+
 # ---------- Misc helpers ----------
 
 def _is_admin_from_request():
@@ -172,11 +201,13 @@ def api_health():
     users = _users()
     admins = _admins()
     resources = _resources()
+    anns = _announcements()
     return jsonify({
         "ok": True,
         "users": len(users),
         "admins": len(admins),
         "resources": len(resources),
+        "announcements": len(anns),
     })
 
 
@@ -379,6 +410,66 @@ def get_updates():
     if not _is_admin_from_request():
         return jsonify({"error": "Forbidden"}), 403
     return jsonify(_subscribers())
+
+
+# ---------- Announcements ----------
+
+@app.get("/api/announcements")
+def get_announcements():
+    """
+    Public: list announcements (newest first).
+    Returns: [{id, title, body, created_at, created_by}, ...]
+    """
+    return jsonify(_announcements())
+
+
+@app.post("/api/announcements")
+def create_announcement():
+    """
+    Admin-only: create a new announcement.
+    These are the messages that should be emailed to subscribers.
+    """
+    if not _is_admin_from_request():
+        return jsonify({"error": "Forbidden"}), 403
+
+    payload = request.get_json(silent=True) or {}
+    title = (payload.get("title") or "").strip()
+    body  = (payload.get("body") or "").strip()
+
+    if not title or not body:
+        return jsonify({"error": "Title and body are required"}), 400
+
+    anns = _announcements()
+    aid  = _next_announcement_id(anns)
+    created_by = _norm_email(request.headers.get("X-User-Email"))
+    created_at = datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z"
+
+    ann = {
+        "id": aid,
+        "title": title,
+        "body": body,
+        "created_at": created_at,
+        "created_by": created_by,
+    }
+    anns.append(ann)
+    _save_announcements(anns)
+    return jsonify(ann), 201
+
+
+@app.delete("/api/announcements/<aid>")
+def delete_announcement(aid):
+    """
+    Admin-only: delete an announcement by id.
+    """
+    if not _is_admin_from_request():
+        return jsonify({"error": "Forbidden"}), 403
+
+    anns = _announcements()
+    new_anns = [a for a in anns if str(a.get("id")) != str(aid)]
+    if len(new_anns) == len(anns):
+        return jsonify({"error": "Not found"}), 404
+    _save_announcements(new_anns)
+    return jsonify({"ok": True, "deleted": aid})
 
 
 if __name__ == "__main__":

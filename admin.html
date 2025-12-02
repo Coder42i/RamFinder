@@ -12,7 +12,7 @@
       <div class="logo" aria-hidden="true">RF</div>
       <div style="flex:1">
         <h1>Admin Cockpit</h1>
-        <div class="subtitle">Manage admin emails and campus resources.</div>
+        <div class="subtitle">Manage admin emails, resources, and announcements.</div>
         <nav class="breadcrumb"><a href="index.html">Home</a> › <span>Admin</span></nav>
       </div>
       <div id="userbox" class="badge">Guest</div>
@@ -49,7 +49,7 @@
     <!-- Resources Panel -->
     <section id="panelResources" class="card" style="display:none">
       <div class="subtitle" style="margin-bottom:10px">
-        Manage campus resources, including out-of-service status.
+        Manage campus resources, including out-of-service status and announcements.
       </div>
 
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px">
@@ -93,6 +93,36 @@
           <button id="cancelResBtn" class="btn">Cancel</button>
         </div>
       </div>
+
+      <!-- Announcements Panel -->
+      <section id="panelAnnouncements" class="card" style="margin-top:16px;">
+        <h2>Announcements</h2>
+        <div class="subtitle" style="margin-bottom:10px">
+          Post short updates that you will email to subscribers.
+          These are also visible on the RamFinder home page.
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr; gap:8px; margin-bottom:12px">
+          <input id="annTitle" type="text" placeholder="Announcement title" />
+          <textarea id="annBody" rows="3" placeholder="Announcement body"></textarea>
+        </div>
+        <div class="actions" style="margin-bottom:12px">
+          <button id="annPostBtn" class="btn">Post announcement</button>
+          <span id="annStatus" class="meta" aria-live="polite"></span>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Created</th>
+              <th>By</th>
+              <th style="width:120px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="annRows"></tbody>
+        </table>
+      </section>
     </section>
   </div>
 
@@ -160,7 +190,7 @@
           apiBadge.textContent = 'Backend: offline';
           apiBadge.style.borderColor = '#fca5a5';
           apiBadge.style.color = '#fca5a5';
-          return false;
+          return False;
         }
       }
       let apiUp = await setApiBadge();
@@ -247,9 +277,9 @@
       let EDITING_ID = null;
 
       function isOpenNow(item, now=new Date()){
-        if (!item.hours) return false;
+        if (!item.hours) return False;
         const slot = item.hours[DOW[now.getDay()]];
-        if (!slot || slot.closed) return false;
+        if (!slot || slot.closed) return False;
         const [oh,om] = (slot.open||'00:00').split(':').map(Number);
         const [ch,cm] = (slot.close||'00:00').split(':').map(Number);
         const cur = now.getHours()*60 + now.getMinutes();
@@ -443,9 +473,88 @@
         loadResources();
       });
 
+      // --- Announcements ---
+      const annTitle  = document.getElementById('annTitle');
+      const annBody   = document.getElementById('annBody');
+      const annPostBtn= document.getElementById('annPostBtn');
+      const annStatus = document.getElementById('annStatus');
+      const annRows   = document.getElementById('annRows');
+
+      async function loadAnnouncements(){
+        annRows.innerHTML = '';
+        try {
+          const res = await fetch(`${API_BASE}/api/announcements`, {cache:'no-store'});
+          const anns = await res.json();
+          (anns || []).forEach(a => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${a.title}</td>
+              <td>${a.created_at || ''}</td>
+              <td>${a.created_by || ''}</td>
+              <td>
+                <button class="btn" data-ann-id="${a.id}">Delete</button>
+              </td>`;
+            annRows.appendChild(tr);
+          });
+        } catch (err){
+          console.error(err);
+          annStatus.textContent = 'Could not load announcements.';
+        }
+      }
+
+      annPostBtn.addEventListener('click', async () => {
+        annStatus.textContent = '';
+        const title = (annTitle.value || '').trim();
+        const body  = (annBody.value  || '').trim();
+        if (!title || !body){
+          annStatus.textContent = 'Title and body are required.';
+          return;
+        }
+        try {
+          const res = await apiFetch('/api/announcements', {
+            method: 'POST',
+            body: JSON.stringify({ title, body })
+          });
+          const data = await res.json();
+          if (!res.ok || data.error){
+            annStatus.textContent = data.error || 'Could not post announcement.';
+            return;
+          }
+          annTitle.value = '';
+          annBody.value  = '';
+          annStatus.textContent = 'Announcement posted.';
+          loadAnnouncements();
+        } catch (err){
+          console.error(err);
+          annStatus.textContent = 'Server error posting announcement.';
+        }
+      });
+
+      annRows.addEventListener('click', async (e) => {
+        const btn = e.target.closest('button[data-ann-id]');
+        if (!btn) return;
+        if (!confirm('Delete this announcement?')) return;
+        const id = btn.getAttribute('data-ann-id');
+        try {
+          const res = await apiFetch(`/api/announcements/${encodeURIComponent(id)}`, {
+            method: 'DELETE'
+          });
+          const data = await res.json();
+          if (!res.ok || data.error){
+            alert(data.error || 'Could not delete announcement.');
+            return;
+          }
+          loadAnnouncements();
+        } catch (err){
+          console.error(err);
+          alert('Server error deleting announcement.');
+        }
+      });
+
       // Init
       await loadAdmins();
       await loadResources();
+      await loadAnnouncements();
 
       function requireAdmin(){
         if (!sess || !sess.admin){
