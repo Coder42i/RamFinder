@@ -8,7 +8,7 @@
 </head>
 <body>
   <div class="container">
-    <!-- Restored simple header; theme button will be injected by theme.js -->
+    <!-- Header: same pattern as other pages; theme button comes from theme.js -->
     <header>
       <div class="logo" aria-hidden="true">RF</div>
       <div>
@@ -36,7 +36,8 @@
       <div class="controls">
         <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap">
           <label class="toggle"><input id="openNow" type="checkbox" /> Open Now</label>
-          <label class="toggle"><input id="groupedToggle" type="checkbox" checked />
+          <label class="toggle">
+            <input id="groupedToggle" type="checkbox" checked />
             Show results in separate groups
           </label>
         </div>
@@ -59,6 +60,19 @@
 
     <footer>
       <div>Tip: Click a category to expand it. Sign in to save favorites.</div>
+
+      <!-- Simple updates subscription form -->
+      <form id="updatesForm" class="updates-form" novalidate
+            style="margin-top:0.5rem; display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+        <label for="updatesEmail" class="sr-only">Email for updates</label>
+        <input id="updatesEmail"
+               type="email"
+               placeholder="you@colostate.edu"
+               required
+               style="min-width:220px;" />
+        <button class="btn secondary" type="submit">Get updates</button>
+        <span id="updatesStatus" class="meta" aria-live="polite"></span>
+      </form>
     </footer>
   </div>
 
@@ -99,8 +113,9 @@
     })();
   </script>
 
-  <!-- Search + favorites + share + accessibility logic -->
+  <!-- Search + favorites + share + accessibility + updates logic -->
   <script>
+    const API_BASE = 'http://127.0.0.1:5050';
     const DATA_URL = 'data/resources.json';
     const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
@@ -140,14 +155,14 @@
     let activeChip=null;
     let expandedGroup=null;
 
-    const q           = document.getElementById('q');
-    const results     = document.getElementById('results');
-    const accordion   = document.getElementById('accordion');
-    const count       = document.getElementById('count');
-    const empty       = document.getElementById('empty');
-    const clearBtn    = document.getElementById('clearBtn');
-    const openNow     = document.getElementById('openNow');
-    const chipsWrap   = document.getElementById('chips');
+    const q             = document.getElementById('q');
+    const results       = document.getElementById('results');
+    const accordion     = document.getElementById('accordion');
+    const count         = document.getElementById('count');
+    const empty         = document.getElementById('empty');
+    const clearBtn      = document.getElementById('clearBtn');
+    const openNow       = document.getElementById('openNow');
+    const chipsWrap     = document.getElementById('chips');
     const groupedToggle = document.getElementById('groupedToggle');
 
     const typeMap = new Map();
@@ -490,6 +505,50 @@
       setMode(true); // grouped by default
     }
     init();
+
+    // --- "Get updates" subscription form wiring ---
+    const updatesForm   = document.getElementById('updatesForm');
+    const updatesEmail  = document.getElementById('updatesEmail');
+    const updatesStatus = document.getElementById('updatesStatus');
+
+    if (updatesForm && updatesEmail && updatesStatus) {
+      updatesForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = (updatesEmail.value || '').trim();
+
+        if (!email) {
+          updatesStatus.textContent = 'Please enter an email address.';
+          return;
+        }
+
+        updatesStatus.textContent = 'Saving...';
+
+        try {
+          const res = await fetch(`${API_BASE}/api/updates/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+
+          let data = {};
+          try { data = await res.json(); } catch {}
+
+          if (!res.ok || data.error) {
+            updatesStatus.textContent =
+              data.error || 'Could not save your subscription. Please try again.';
+            return;
+          }
+
+          updatesStatus.textContent =
+            'Thanks! You will receive updates about RamFinder.';
+          updatesForm.reset();
+        } catch (err) {
+          console.error(err);
+          updatesStatus.textContent =
+            'Server not reachable right now. Please try again later.';
+        }
+      });
+    }
   </script>
 </body>
 </html>
